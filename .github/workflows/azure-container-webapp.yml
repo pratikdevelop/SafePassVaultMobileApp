@@ -1,0 +1,41 @@
+name: Expo Build
+
+on:
+  push:
+    branches:
+      - main  # Triggers the build when changes are pushed to the main branch
+  workflow_dispatch:  # Allows manual triggering of the workflow
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # Replace with your Node.js version
+
+      # Step 3: Install Yarn dependencies
+      - name: Install dependencies
+        run: yarn install
+
+      # Step 4: Log in to Expo (requires EXPO_TOKEN secret)
+      - name: Login to Expo
+        run: eas login --token ${{ secrets.EXPO_TOKEN }}
+
+      # Step 5: Build the app (change profile to match your EAS build profile)
+      - name: Run EAS Build
+        run: eas build --platform android --profile production
+
+      # Optional Step: Upload build artefact to GitHub
+      - name: Upload APK or AAB
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: build/android/app/build/outputs/bundle/release/app.aab # or path to the APK file
