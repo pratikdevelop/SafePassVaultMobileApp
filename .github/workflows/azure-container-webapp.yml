@@ -31,7 +31,7 @@ jobs:
 
       # Step 5: Build the app (change profile to match your EAS build profile)
       - name: Run EAS Build
-        run: eas build --platform android --profile production
+        run: eas build --platform android --profile developement
 
       # Optional Step: Upload build artefact to GitHub
       - name: Upload APK or AAB
