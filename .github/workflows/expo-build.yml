@@ -19,11 +19,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18  # Replace with your Node.js version
+          node-version: 20  # Replace with your Node.js version
 
       # Step 3: Install Yarn dependencies
       - name: Install dependencies
-        run: yarn install
+        run: npm install && npm install -g eas-cli
 
       # Step 4: Log in to Expo (requires EXPO_TOKEN secret)
       - name: Login to Expo
@@ -31,11 +31,11 @@ jobs:
 
       # Step 5: Build the app (change profile to match your EAS build profile)
       - name: Run EAS Build
-        run: eas build --platform android --profile developement
+        run: eas build --platform android --profile development  # Corrected spelling of 'development'
 
-      # Optional Step: Upload build artefact to GitHub
+      # Optional Step: Upload build artifact to GitHub
       - name: Upload APK or AAB
         uses: actions/upload-artifact@v3
         with:
           name: app-release
-          path: build/android/app/build/outputs/bundle/release/app.aab # or path to the APK file
+          path: build/android/app/build/outputs/bundle/release/app.aab  # Adjust this path if necessary
