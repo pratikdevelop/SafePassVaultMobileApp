@@ -2,12 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { TextInput, IconButton, List, Text } from "react-native-paper";
 import PasswordViewScreen from "./PasswordViewScreen";
-import { Drawer } from "react-native-magnus";
 import service from "../services/passwordservice"; // Adjust the import path as necessary
 import PasswordForm from "@/app/components/PasswordForm";
 import Confirmation from "../components/Confirmation";
 import BottomMenu from "../components/BottomDrawer";
 import BottomSheet from "@gorhom/bottom-sheet";
+import MenuDrawer from 'react-native-side-drawer'
+
 const PasswordScreen = ({ navigation }: any) => {
   const [passwords, setPasswords] = useState<any[]>([]);
   const [search, setSearch] = useState<string | undefined>();
@@ -16,7 +17,7 @@ const PasswordScreen = ({ navigation }: any) => {
   const [showModel, setShowModel] = useState(false);
   const [confirmModel, setConfirmModel] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const drawerRef = useRef<any>();
+  const [drawerRef, setDrawerRef] = useState<any>();
   useEffect(() => {
     getPasswords();
   }, [search]);
@@ -36,7 +37,7 @@ const PasswordScreen = ({ navigation }: any) => {
   };
 
   let toggleDrawer = () => {
-    drawerRef.current.close();
+    setDrawerRef(false)
   };
 
   const closeMenu = (_action: string) => {
@@ -45,7 +46,7 @@ const PasswordScreen = ({ navigation }: any) => {
     } else if (_action === "edit") {
       setShowModel(true);
     } else if (_action === "passwordView") {
-      drawerRef.current.open();
+      setDrawerRef(true)
     }
     bottomSheetRef.current?.close();
     bottomSheetRef.current?.snapToPosition(0);
@@ -137,15 +138,21 @@ const PasswordScreen = ({ navigation }: any) => {
         handleConfirm={handleConfirm}
         cancel={() => setConfirmModel(false)}
       />
-      <Drawer
-        ref={drawerRef}
-        children={PasswordViewScreen({
-          openDrawer,
-          toggleDrawer,
-          password,
-          drawerRef,
-        })}
-      />
+      <MenuDrawer
+          open= {drawerRef}
+          position={'left'}
+          drawerContent={PasswordViewScreen({
+            openDrawer,
+            toggleDrawer,
+            password,
+            drawerRef,
+          })}
+          drawerPercentage={45}
+          animationTime={250}
+          overlay={true}
+          opacity={0.4}
+        />
+          
       <BottomMenu closeMenu={closeMenu} bottomSheetRef={bottomSheetRef} />
 
       <IconButton

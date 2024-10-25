@@ -10,7 +10,7 @@ import MFAVerificationScreen from "./screens/MFAVerificationScreen";
 import SignupScreen from "./screens/SignupScreen";
 import store from "./store/store";
 import { loadToken } from "./store/actions/authAction";
-import { Icon } from "react-native-magnus";
+import { Icon } from "react-native-paper";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +26,7 @@ const IndexTabs = () => {
           } else if (route.name === "Profile") {
             iconName = "person";
           }
-          return <Icon name={iconName} color={color} />;
+          return <Icon source={iconName} color={color} size={24} />;
         },
       })}
     >
