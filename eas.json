@@ -11,13 +11,13 @@
         "buildType": "apk"
       },
       "ios": {
-        "buildType": "simulator" 
+        "buildConfiguration": "debug" 
       }
     },
     "preview": {
       "distribution": "internal",
       "ios": {
-        "buildType": "release" 
+        "buildConfiguration": "release" 
       }
     },
     "production": {
@@ -27,7 +27,7 @@
         "buildType": "app-bundle"
       },
       "ios": {
-        "buildType": "release",  
+        "buildConfiguration": "release",  
         "credentialsSource": "remote"
       }
     }
