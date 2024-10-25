@@ -8,7 +8,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "npm": "npm install --legacy-peer-deps"
       },
       "ios": {
         "buildConfiguration": "debug" 
@@ -24,7 +25,8 @@
       "autoIncrement": true,
       "distribution": "store",
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "app-bundle",
+        "npm": "npm install --legacy-peer-deps"
       },
       "ios": {
         "buildConfiguration": "release",  
