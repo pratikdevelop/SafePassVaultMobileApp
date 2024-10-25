@@ -11,7 +11,7 @@ const PasswordService = {
   fetchPasswords: async (search = '') => {
     try {
       const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
-      const { data } = await axiosConfig.get(`${apiUrl}?search=${search}`, refreshToken);
+      const { data } = await axiosConfig.get(`${apiUrl}?search=${search}`);
       const decryptedPasswords = data.passwords.map((res: { password: string | CryptoJS.lib.CipherParams; key: string | CryptoJS.lib.WordArray; }) => {
         try {
           const decryptedPassword = CryptoJS.AES.decrypt(res.password, res.key).toString(CryptoJS.enc.Utf8);
@@ -45,9 +45,8 @@ const PasswordService = {
   },
 
   deletePassword: async (id: any) => {
-    const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
     try {
-      await axiosConfig.delete(`${apiUrl}/password/${id}`, refreshToken);
+      await axiosConfig.delete(`${apiUrl}/password/${id}`);
     } catch (error) {
       console.error('Error deleting password:', error);
       throw error;
@@ -57,7 +56,7 @@ const PasswordService = {
   addToFavorites: async (passwordId: any) => {
     const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
     try {
-      const response = await axiosConfig.post(`${apiUrl}/password/${passwordId}/favorite`, {}, refreshToken);
+      const response = await axiosConfig.post(`${apiUrl}/password/${passwordId}/favorite`, {});
       return response.data;
     } catch (error) {
       console.error('Error adding to favorites:', error);
@@ -68,7 +67,7 @@ const PasswordService = {
   updatePassword: async (_id: any, newPasswordObject: any) => {
     try {
       const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
-      const response = await axiosConfig.put(`${apiUrl}/password/${_id}`, newPasswordObject, refreshToken);
+      const response = await axiosConfig.put(`${apiUrl}/password/${_id}`, newPasswordObject);
       const decryptedPassword = CryptoJS.AES.decrypt(response.data.password, response.data.key).toString(CryptoJS.enc.Utf8);
       return { ...response.data, password: decryptedPassword };
     } catch (error) {
@@ -81,7 +80,7 @@ const PasswordService = {
     try {
       const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
 
-      const response = await axiosConfig.post(`${apiUrl}/share/${passwordId}`, {}, refreshToken);
+      const response = await axiosConfig.post(`${apiUrl}/share/${passwordId}`, {});
       return response.data; // Assuming it returns { shareLink: string }
     } catch (error) {
       console.error('Error generating share link:', error);

@@ -20,6 +20,9 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "config":{
+        "usesNonExemptEncryption": false
+      },
       "package": "com.pratikraut.SafePassVault"
     },
     "web": {

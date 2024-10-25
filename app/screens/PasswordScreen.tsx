@@ -1,28 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import BottomDrawerExample from '@/app/components/BottomDrawer';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import {
-  TextInput,
-  IconButton,
-  List, 
-  Text,
-} from 'react-native-paper';
-import PasswordViewScreen from './PasswordViewScreen';
-
-
-import service from '../services/passwordservice'; // Adjust the import path as necessary
-import PasswordForm from '@/app/components/PasswordForm';
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { TextInput, IconButton, List, Text } from "react-native-paper";
+import PasswordViewScreen from "./PasswordViewScreen";
+import { Drawer } from "react-native-magnus";
+import service from "../services/passwordservice"; // Adjust the import path as necessary
+import PasswordForm from "@/app/components/PasswordForm";
+import Confirmation from "../components/Confirmation";
+import BottomMenu from "../components/BottomDrawer";
+import BottomSheet from "@gorhom/bottom-sheet";
 const PasswordScreen = ({ navigation }: any) => {
-  const Drawer = createDrawerNavigator();
   const [passwords, setPasswords] = useState<any[]>([]);
   const [search, setSearch] = useState<string | undefined>();
-  const [visibleMenu, setVisibleMenu] = useState<string | null>(null);
   const [password, setPassword] = useState<any>(null);
   const [openDrawer, setDrawerOpen] = useState<boolean>(false);
   const [showModel, setShowModel] = useState(false);
-
+  const [confirmModel, setConfirmModel] = useState(false);
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const drawerRef = useRef<any>();
   useEffect(() => {
     getPasswords();
   }, [search]);
@@ -32,45 +26,50 @@ const PasswordScreen = ({ navigation }: any) => {
       const data = await service.fetchPasswords(search);
       setPasswords(data);
     } catch (error) {
-      console.error('Error fetching passwords:', error);
+      console.error("Error fetching passwords:", error);
     }
   };
 
   const openMenu = (item: any) => {
-    if (item._id === visibleMenu) {
-      setVisibleMenu(null);
-    } else {
-      setVisibleMenu(item._id);
-      setPassword(item);
-    }
+    bottomSheetRef.current?.expand();
+    setPassword(item);
   };
 
-  const toggleDrawer = () => {
-    setDrawerOpen(!openDrawer);
+  let toggleDrawer = () => {
+    drawerRef.current.close();
   };
 
   const closeMenu = (_action: string) => {
-    if (_action === 'delete') {
-      // Handle delete action if needed
-    } else if (_action === 'edit') {
-      // Handle edit action if needed
+    if (_action === "delete") {
+      setConfirmModel(true);
+    } else if (_action === "edit") {
       setShowModel(true);
-    }else if(_action === 'passwordView') {
-      setDrawerOpen(true);
+    } else if (_action === "passwordView") {
+      drawerRef.current.open();
     }
-    setVisibleMenu(null);
+    bottomSheetRef.current?.close();
+    bottomSheetRef.current?.snapToPosition(0);
+    bottomSheetRef.current?.forceClose()
   };
 
-  const createPassword = ()=>{
-  setPassword(null);setDrawerOpen(false); setShowModel(true)
-  }
+  const createPassword = () => {
+    setPassword(null);
+    setDrawerOpen(false);
+    setShowModel(true);
+  };
+  const handleConfirm = () => {
+    service.deletePassword(password._id).then((response: any) => {
+      getPasswords();
+      setConfirmModel(false);
+    });
+  };
 
   const toggleFavourite = async (passwordId: string) => {
     try {
       await service.fetchPasswords(passwordId);
       getPasswords();
     } catch (error) {
-      console.error('Error fetching passwords:', error);
+      console.error("Error fetching passwords:", error);
     }
   };
 
@@ -78,8 +77,8 @@ const PasswordScreen = ({ navigation }: any) => {
     setShowModel(false);
   }
 
-  return( 
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+  return (
+    <View style={{ flex: 1, backgroundColor: "white" }}>
       <View style={styles.container}>
         <TextInput
           mode="outlined"
@@ -88,79 +87,99 @@ const PasswordScreen = ({ navigation }: any) => {
           value={search}
           style={styles.searchInput}
         />
-        {
-          passwords.length > 0 ? <>
-          {passwords.map((item) => (
-          <List.Item
-            key={item._id}
-            titleStyle={{ fontWeight: 'bold', textTransform: 'capitalize' }}
-            title={`${item.name}`}
-            description={item.website}
-            left={(props: any) => (
-              <IconButton
-                icon="star"
-                iconColor={item.isFavorite ? 'yellow' : 'gray'}
-                size={24}
-                onPress={() => toggleFavourite(item._id)}
+        {passwords.length > 0 ? (
+          <>
+            {passwords.map((item) => (
+              <List.Item
+                key={item._id}
+                titleStyle={{ fontWeight: "bold", textTransform: "capitalize" }}
+                title={`${item.name}`}
+                description={item.website}
+                left={() => (
+                  <IconButton
+                    icon="star"
+                    iconColor={item.isFavorite ? "yellow" : "gray"}
+                    size={24}
+                    onPress={() => toggleFavourite(item._id)}
+                  />
+                )}
+                right={() => (
+                  <IconButton
+                    icon="dots-vertical"
+                    mode="contained"
+                    onPress={openMenu}
+                  ></IconButton>
+                )}
               />
-            )}
-            right={(props: any) => (
-              <IconButton icon='dots-vertical' mode='contained' onPress={() => openMenu(item)}>
-              </IconButton>
-            )}
-          />
-        ))}
+            ))}
           </>
-          :
-          <View style={{display:"flex", alignItems:"center", justifyContent:"center"}}>
-
-          <Text>No passwords found</Text>
+        ) : (
+          <View
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text>No passwords found</Text>
           </View>
-        }
-        
+        )}
       </View>
-      <PasswordForm visible={showModel} onDismiss={hideDialog} password={password} />
-      <PasswordViewScreen
-        open={openDrawer}
-        toggleDrawer={toggleDrawer}
+      <PasswordForm
+        visible={showModel}
+        onDismiss={hideDialog}
         password={password}
       />
-      {visibleMenu ? <BottomDrawerExample closeMenu={closeMenu} /> : null}
+      <Confirmation
+        confirmModel={confirmModel}
+        title={"ConFirmation Dialog"}
+        description={"Are You  Sure To delete this password?"}
+        handleConfirm={handleConfirm}
+        cancel={() => setConfirmModel(false)}
+      />
+      <Drawer
+        ref={drawerRef}
+        children={PasswordViewScreen({
+          openDrawer,
+          toggleDrawer,
+          password,
+          drawerRef,
+        })}
+      />
+      <BottomMenu closeMenu={closeMenu} bottomSheetRef={bottomSheetRef} />
 
       <IconButton
-        icon='plus'
+        icon="plus"
         size={28}
-        containerColor='blue'
-        iconColor='white'
+        containerColor="blue"
+        iconColor="white"
         style={styles.newPasswordButton}
         onPress={createPassword}
-      >
-        
-      </IconButton>
+      ></IconButton>
     </View>
-)
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   searchInput: {
     marginBottom: 20,
   },
   newPasswordButton: {
     borderRadius: 20,
-    position: 'absolute',
+    position: "absolute",
     bottom: 10,
     right: 20,
-    color: '#ff55d3',
-    alignItems: 'center',
+    color: "#ff55d3",
+    alignItems: "center",
   },
   newPasswordButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

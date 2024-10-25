@@ -9,20 +9,13 @@ import {
   FlatList,
 } from "react-native";
 import { Button, IconButton, TextInput } from "react-native-paper";
-import MenuDrawer from "react-native-side-drawer";
+
 
 const PasswordViewScreen = ({
-  toggleDrawer,
-  password,
-  removeTag,
-  open = false,
-  drawerPercentage = 100,
-  animationTime = 250,
-  opacity = 0.1,
+  toggleDrawer, password, removeTag
 }: any) => {
   const [newTag, setNewTag] = useState("");
   const [newComment, setNewComment] = useState("");
-  const position = "right";
 
   const addTag = async () => {
     if (newTag !== "") {
@@ -65,134 +58,120 @@ const PasswordViewScreen = ({
     </View>
   );
 
-  const drawerContent = () => {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Password Details</Text>
-          <TouchableOpacity onPress={toggleDrawer}>
-            <IconButton style={styles.closeButton} icon="close" />
-          </TouchableOpacity>
-        </View>
-        <ScrollView>
-          <View style={styles.detailsBox}>
-            {/* Password Details */}
-            {[
-              { label: "Title:", value: password?.name },
-              {
-                label: "Created At:",
-                value: new Date(password?.createdAt).toLocaleDateString(),
-              },
-              { label: "Website:", value: password?.website },
-              { label: "Username:", value: password?.username },
-              { label: "Password:", value: password?.password },
-              {
-                label: "Description:",
-                value: password?.description || "No description provided",
-              },
-              { label: "Created By:", value: password?.created_by?.name },
-              { label: "Modified By:", value: password?.modifiedby?.name },
-              {
-                label: "Updated At:",
-                value: new Date(password?.updatedAt).toLocaleDateString(),
-              },
-              {
-                label: "Favorite:",
-                value: password?.isFavorite ? "Yes" : "No",
-              },
-            ].map(({ label, value }, index) => (
-              <View key={index} style={styles.row}>
-                <Text style={styles.label}>{label}</Text>
-                <Text>{value}</Text>
-              </View>
-            ))}
-          </View>
-
-          {/* Tags Section */}
-          <View style={styles.tagsContainer}>
-            <Text style={styles.sectionTitle}>Tags</Text>
-            <View style={styles.tagsWrapper}>
-              {password?.tags?.map((tag: { _id: React.Key; name: string }) => (
-                <View key={tag._id} style={styles.tag}>
-                  <Text>{tag.name}</Text>
-                  <TouchableOpacity onPress={() => removeTag(tag._id)}>
-                    <Text style={styles.removeTag}>x</Text>
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </View>
-            <View style={styles.addTagContainer}>
-              <TextInput
-                value={newTag}
-                onChangeText={setNewTag}
-                style={{
-                  width: "66%",
-                  height: 40,
-                }}
-                placeholder="Add a new tag"
-              />
-              <Button
-                style={{
-                  width: "30%",
-                  height: 40,
-                  alignContent: "center",
-
-                  borderRadius: 0,
-                }}
-                mode="contained"
-                onPress={addTag}
-              >
-                Add Tag
-              </Button>
-            </View>
-          </View>
-
-          {/* Comments Section */}
-          <View style={styles.commentsContainer}>
-            <Text style={styles.sectionTitle}>Comments</Text>
-            {password?.comments?.length > 0 ? (
-              <FlatList
-                data={password.comments}
-                renderItem={renderComment}
-                keyExtractor={(item, index) => index.toString()}
-                contentContainerStyle={styles.flatListContainer}
-              />
-            ) : (
-              <Text style={styles.noComments}>No comments yet.</Text>
-            )}
-            <View style={styles.addCommentContainer}>
-              <TextInput
-                value={newComment}
-                onChangeText={setNewComment}
-                style={{
-                  width: "66%",
-                  height: 40,
-                }}
-                placeholder="Add a new comment"
-              />
-              <Button
-                onPress={addComment}
-                mode="contained"
-                style={styles.addButton}
-              >
-                <Text style={styles.postButtonText}>Post Comment</Text>
-              </Button>
-            </View>
-          </View>
-        </ScrollView>
-      </View>
-    );
-  };
-
   return (
-    <MenuDrawer
-      open={open}
-      drawerContent={drawerContent()}
-      position={position}
-      drawerPercentage={drawerPercentage}
-      animationTime={animationTime}
-      opacity={opacity}
-    />
+    <View style={styles.container}>
+    <View style={styles.header}>
+      <Text style={styles.title}>Password Details</Text>
+      <TouchableOpacity onPress={toggleDrawer}>
+        <IconButton style={styles.closeButton} icon="close" />
+      </TouchableOpacity>
+    </View>
+    <ScrollView>
+      <View style={styles.detailsBox}>
+        {[
+          { label: "Title:", value: password?.name },
+          {
+            label: "Created At:",
+            value: new Date(password?.createdAt).toLocaleDateString(),
+          },
+          { label: "Website:", value: password?.website },
+          { label: "Username:", value: password?.username },
+          { label: "Password:", value: password?.password },
+          {
+            label: "Description:",
+            value: password?.description || "No description provided",
+          },
+          { label: "Created By:", value: password?.created_by?.name },
+          { label: "Modified By:", value: password?.modifiedby?.name },
+          {
+            label: "Updated At:",
+            value: new Date(password?.updatedAt).toLocaleDateString(),
+          },
+          {
+            label: "Favorite:",
+            value: password?.isFavorite ? "Yes" : "No",
+          },
+        ].map(({ label, value }, index) => (
+          <View key={index} style={styles.row}>
+            <Text style={styles.label}>{label}</Text>
+            <Text>{value}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Tags Section */}
+      <View style={styles.tagsContainer}>
+        <Text style={styles.sectionTitle}>Tags</Text>
+        <View style={styles.tagsWrapper}>
+          {password?.tags?.map((tag: { _id: React.Key; name: string }) => (
+            <View key={tag._id} style={styles.tag}>
+              <Text>{tag.name}</Text>
+              <TouchableOpacity onPress={() => removeTag(tag._id)}>
+                <Text style={styles.removeTag}>x</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+        <View style={styles.addTagContainer}>
+          <TextInput
+            value={newTag}
+            onChangeText={setNewTag}
+            style={{
+              width: "66%",
+              height: 40,
+            }}
+            placeholder="Add a new tag"
+          />
+          <Button
+            style={{
+              width: "30%",
+              height: 40,
+              alignContent: "center",
+
+              borderRadius: 0,
+            }}
+            mode="contained"
+            onPress={addTag}
+          >
+            Add Tag
+          </Button>
+        </View>
+      </View>
+
+      {/* Comments Section */}
+      <View style={styles.commentsContainer}>
+        <Text style={styles.sectionTitle}>Comments</Text>
+        {password?.comments?.length > 0 ? (
+          <FlatList
+            data={password.comments}
+            renderItem={renderComment}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={styles.flatListContainer}
+          />
+        ) : (
+          <Text style={styles.noComments}>No comments yet.</Text>
+        )}
+        <View style={styles.addCommentContainer}>
+          <TextInput
+            value={newComment}
+            onChangeText={setNewComment}
+            style={{
+              width: "66%",
+              height: 40,
+            }}
+            placeholder="Add a new comment"
+          />
+          <Button
+            onPress={addComment}
+            mode="contained"
+            style={styles.addButton}
+          >
+            <Text style={styles.postButtonText}>Post Comment</Text>
+          </Button>
+        </View>
+      </View>
+    </ScrollView>
+  </View>
   );
 };
 

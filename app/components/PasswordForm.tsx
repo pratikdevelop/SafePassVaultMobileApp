@@ -22,7 +22,7 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
     formState: { errors },
   } = useForm();
   const [selectedTags, setSelectedTags] = useState([]);
-  const [tags, setTags] = useState<any>()
+  const [tags, setTags] = useState<any>([])
   useEffect(() => {
     // Reset form and clear selected tags
     reset();
@@ -45,8 +45,8 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
   const fetchTags = async () => {
     try {
       const res = await CommonService.searchTags();
-      console.log('Tags fetched:', res); // Log the response to see the structure
-      setTags(res);
+      console.log('Tags fetched:', res.tags); // Log the response to see the structure
+      setTags(res.tags);
     } catch (error) {
       console.error('Error fetching tags:', error);
     }
@@ -63,7 +63,6 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
   };
 
   return (
-    <Portal>
       <Modal
         visible={visible}
         onDismiss={onDismiss}
@@ -185,8 +184,8 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
             {errors.description && (
               <HelperText type="error">Description is required</HelperText>
             )}
-            <TagInput selectedTags={selectedTags} tags={tags} />
           </View>
+            <TagInput selectedTags={selectedTags} tags={tags} />
 
           <View style={styles.actions}>
             <Button mode="text" onPress={onDismiss}>
@@ -198,7 +197,6 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
           </View>
         </View>
       </Modal>
-    </Portal>
   );
 };
 
