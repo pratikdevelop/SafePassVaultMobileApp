@@ -9,16 +9,26 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "ios": {
+        "buildType": "simulator" 
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "buildType": "release" 
+      }
     },
     "production": {
       "autoIncrement": true,
       "distribution": "store",
       "android": {
-        "buildType": "app-bundle" 
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "buildType": "release",  
+        "credentialsSource": "remote"
       }
     }
   },
