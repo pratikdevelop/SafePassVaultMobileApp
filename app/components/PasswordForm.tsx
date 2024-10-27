@@ -12,6 +12,7 @@ import { useForm, Controller } from "react-hook-form";
 import TagInput from "./TagInput";
 import PasswordService from "../services/passwordservice";
 import CommonService from "../services/CommonService";
+import { ScrollView } from "react-native-gesture-handler";
 
 const PasswordForm = ({ visible, onDismiss, password }: any) => {
   const {
@@ -70,7 +71,8 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
       >
         <View style={styles.container}>
           <Title>Add Password</Title>
-          <View style={styles.form}>
+    <ScrollView>
+
             <Controller
               control={control}
               name="name"
@@ -184,9 +186,7 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
             {errors.description && (
               <HelperText type="error">Description is required</HelperText>
             )}
-          </View>
             <TagInput selectedTags={selectedTags} tags={tags} />
-
           <View style={styles.actions}>
             <Button mode="text" onPress={onDismiss}>
               Cancel
@@ -195,8 +195,10 @@ const PasswordForm = ({ visible, onDismiss, password }: any) => {
               Add Password
             </Button>
           </View>
+          </ScrollView>
         </View>
       </Modal>
+
   );
 };
 
@@ -207,7 +209,6 @@ const styles = StyleSheet.create({
   },
   form: {
     flex: 1,
-    justifyContent: "center",
   },
   input: {
     marginBottom: 16,

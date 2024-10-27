@@ -28,7 +28,7 @@
       },
       "ios": {
         "buildConfiguration": "release",  
-        "credentialsSource": "local"
+        "credentialsSource": "remote"
       }
     }
   },
