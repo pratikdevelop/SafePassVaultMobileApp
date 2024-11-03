@@ -1,19 +1,25 @@
 import React, { useRef } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { Icon } from "react-native-paper";
+import { Icon, IconButton } from "react-native-paper";
 
 const BottomMenu = ({ closeMenu, bottomSheetRef }: any) => {
-  const items: any[] = [
-    { id: "1", title: "Launch Website", icon: "folderopen", action: "launch" },
-    { id: "2", title: "Edit password", icon: "edit", action: "edit" },
-    { id: "3", title: "copy password", icon: "copy1", action: "copy_password" },
-    { id: "4", title: "Copy Username", icon: "copy1", action: "copy_username" },
-    { id: "5", title: "Copy website", icon: "copy1", action: "copy_website" },
-    { id: "6", title: "Delete password", icon: "delete", action: "delete" },
-    { id: "7", title: "Share password", icon: "sharealt", action: "share" },
-    { id: "8", title: "View password", icon: "eye", action: "passwordView" },
+
+  
+  const items = [
+    { id: "1", title: "Launch Website", icon: "launch", action: "launch" },
+    { id: "2", title: "Edit Password", icon: "pencil", action: "edit" },
+    { id: "3", title: "Copy Password", icon: "content-copy", action: "copy_password" },
+    { id: "4", title: "Copy Username", icon: "content-copy", action: "copy_username" },
+    { id: "5", title: "Copy Website", icon: "content-copy", action: "copy_website" },
+    { id: "6", title: "Delete Password", icon: "delete", action: "delete" },
+    { id: "7", title: "Share Password", icon: "share-variant", action: "share" },
+    { id: "8", title: "View Password", icon: "eye", action: "passwordView" },
   ];
+  
+
+  
+  
 
   return (
     <View style={styles.container}>
@@ -37,8 +43,7 @@ const BottomMenu = ({ closeMenu, bottomSheetRef }: any) => {
               onPress={() =>  closeMenu(item.action)}
             >
               <View style={styles.item}>
-                <Icon  color={"#d33e3"} size={24} source={item.icon}></Icon>
-
+              <IconButton icon={item.icon}/>
                 <Text style={styles.title}>{item.title}</Text>
               </View>
             </TouchableOpacity>

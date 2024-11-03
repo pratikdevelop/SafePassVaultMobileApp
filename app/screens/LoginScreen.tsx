@@ -25,7 +25,6 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
       password: "",
     },
   });
-  console.log(formValue);
   
 
   const onSubmit = async (data: any) => {
@@ -76,7 +75,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               inputMode="email"
               style={{
                 marginBottom: 20,
-                borderRadius: 20,
+                backgroundColor:"white",
+                borderRadius: 0,
                 borderWidth: 0, // Remove border width
               }}
   
@@ -100,6 +100,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               style={{
                 marginBottom: 20,
                 borderWidth: 0, 
+                backgroundColor:"white"
               }}
               error={formValue.getFieldState('password').invalid}
             />
@@ -121,18 +122,31 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           >
             <Text style={styles.link}> Create Account</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.linkContainer}>
+          <TouchableOpacity onPress={()=>navigation.navigate('forget-password')} style={styles.linkContainer}>
             <Text style={styles.link}>Forgot Password</Text>
           </TouchableOpacity>
         </View>
 
         <Button
           mode="contained"
+          buttonColor="blue"
+          textColor="white"
           aria-disabled = {!formValue.formState.isValid}
           onPress={formValue.handleSubmit(onSubmit)}
           disabled={isSubmitting || !!Object.keys(formValue.formState.errors).length}
+          style={{
+            width: '100%',
+            height: 50,
+            borderRadius:0,
+          }}
         >
-          {isSubmitting ? "Loading..." : "Login"}
+            <Text style={{
+              fontSize:20,
+              fontFamily:"sans serif",
+              fontWeight:600
+            }}>
+              Login
+            </Text>
         </Button>
       </View>
     </View>
@@ -156,7 +170,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 30,
     textAlign: "center",
-    fontFamily: "cursive",
+    
   },
   linkContainer: {
     marginVertical: 12,

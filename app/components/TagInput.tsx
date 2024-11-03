@@ -23,7 +23,6 @@ const TagInput = ({ selectedTags, tags, onTagRemove }: any) => {
   };
 
   function closeMenu(): void {
-    console.log('fff');
     
   }
 

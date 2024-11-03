@@ -22,7 +22,6 @@ const NotesScreen = () => {
       });
   }, [search]);
   return (
-    <div>
        <View style={styles.container}>
        <TextInput
           mode="outlined"
@@ -58,7 +57,6 @@ const NotesScreen = () => {
         </DataTable>
       </ScrollView>
     </View>
-    </div>
   )
 }
 

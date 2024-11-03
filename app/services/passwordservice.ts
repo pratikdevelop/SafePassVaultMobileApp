@@ -1,17 +1,20 @@
-// src/api/PasswordService.js
-
 import SessionStorage from 'react-native-session-storage';
 import axiosConfig from '../../axios-config';
 import CryptoJS from 'react-native-crypto-js';
-import randomstring from 'randomstring'
-const apiUrl = '/passwords';
+import randomstring from 'randomstring';
 
+const apiUrl = '/passwords';
 
 const PasswordService = {
   fetchPasswords: async (search = '') => {
     try {
-      const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
-      const { data } = await axiosConfig.get(`${apiUrl}?search=${search}`);
+      const token = await SessionStorage.getItem('token'); // Retrieve token from storage
+      console.log('ff', token);
+      
+      const { data } = await axiosConfig.get(`${apiUrl}?search=${search}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       const decryptedPasswords = data.passwords.map((res: { password: string | CryptoJS.lib.CipherParams; key: string | CryptoJS.lib.WordArray; }) => {
         try {
           const decryptedPassword = CryptoJS.AES.decrypt(res.password, res.key).toString(CryptoJS.enc.Utf8);
@@ -28,14 +31,15 @@ const PasswordService = {
     }
   },
 
-  addPassword: async (password: any) => {
+  addPassword: async (password: { key: string | CryptoJS.lib.WordArray; password: string | CryptoJS.lib.WordArray; }) => {
     try {
-      password.key = randomstring.generate({
-        length: 32,
-        charset: 'alphanumeric',
-      })
-      password.password = CryptoJS.AES.encrypt(password.password, password.key).toString()
-      const response = await axiosConfig.post(`${apiUrl}/password`, password);
+      const token = await SessionStorage.getItem('token');
+      password.key = randomstring.generate({ length: 32, charset: 'alphanumeric' });
+      password.password = CryptoJS.AES.encrypt(password.password, password.key).toString();
+
+      const response = await axiosConfig.post(`${apiUrl}/password`, password, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const decryptedPassword = CryptoJS.AES.decrypt(response.data.password, response.data.key).toString(CryptoJS.enc.Utf8);
       return { ...response.data, password: decryptedPassword };
     } catch (error) {
@@ -46,7 +50,10 @@ const PasswordService = {
 
   deletePassword: async (id: any) => {
     try {
-      await axiosConfig.delete(`${apiUrl}/password/${id}`);
+      const token = await SessionStorage.getItem('token');
+      await axiosConfig.delete(`${apiUrl}/password/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
     } catch (error) {
       console.error('Error deleting password:', error);
       throw error;
@@ -54,9 +61,11 @@ const PasswordService = {
   },
 
   addToFavorites: async (passwordId: any) => {
-    const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
     try {
-      const response = await axiosConfig.post(`${apiUrl}/password/${passwordId}/favorite`, {});
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.post(`${apiUrl}/password/${passwordId}/favorite`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error('Error adding to favorites:', error);
@@ -66,8 +75,10 @@ const PasswordService = {
 
   updatePassword: async (_id: any, newPasswordObject: any) => {
     try {
-      const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
-      const response = await axiosConfig.put(`${apiUrl}/password/${_id}`, newPasswordObject);
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.put(`${apiUrl}/password/${_id}`, newPasswordObject, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const decryptedPassword = CryptoJS.AES.decrypt(response.data.password, response.data.key).toString(CryptoJS.enc.Utf8);
       return { ...response.data, password: decryptedPassword };
     } catch (error) {
@@ -78,10 +89,11 @@ const PasswordService = {
 
   sharePassword: async (passwordId: any) => {
     try {
-      const refreshToken = await SessionStorage.getItem('refreshToken'); // Get the refresh token
-
-      const response = await axiosConfig.post(`${apiUrl}/share/${passwordId}`, {});
-      return response.data; // Assuming it returns { shareLink: string }
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.post(`${apiUrl}/share/${passwordId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
     } catch (error) {
       console.error('Error generating share link:', error);
       throw error;
@@ -90,7 +102,10 @@ const PasswordService = {
 
   searchTags: async (name: any) => {
     try {
-      const response = await axiosConfig.get(`/tags/search/${name}`);
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.get(`/tags/search/${name}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error('Error searching tags:', error);
@@ -100,7 +115,10 @@ const PasswordService = {
 
   addTag: async (payload: any) => {
     try {
-      const response = await axiosConfig.post(`/tags/tag`, payload);
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.post(`/tags/tag`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error('Error adding tag:', error);
@@ -110,7 +128,11 @@ const PasswordService = {
 
   exportPasswordsAsCsv: async (ids: any) => {
     try {
-      const response = await axiosConfig.get(`${apiUrl}/export?ids=${ids}`, { responseType: 'blob' });
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.get(`${apiUrl}/export?ids=${ids}`, {
+        responseType: 'blob',
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error('Error exporting passwords:', error);
@@ -120,8 +142,10 @@ const PasswordService = {
 
   addTagToPassword: async (passwordId: any, tagName: any) => {
     try {
-      const body = { passwordId, tagName };
-      const response = await axiosConfig.post(`${apiUrl}/add-tag`, body);
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.post(`${apiUrl}/add-tag`, { passwordId, tagName }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error('Error adding tag to password:', error);
@@ -131,7 +155,10 @@ const PasswordService = {
 
   postComment: async (passwordId: any, content: any) => {
     try {
-      const response = await axiosConfig.post(`${apiUrl}/${passwordId}/comments`, { content });
+      const token = await SessionStorage.getItem('token');
+      const response = await axiosConfig.post(`${apiUrl}/${passwordId}/comments`, { content }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return response.data;
     } catch (error) {
       console.error('Error posting comment:', error);
