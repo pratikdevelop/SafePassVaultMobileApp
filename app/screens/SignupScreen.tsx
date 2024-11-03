@@ -240,9 +240,6 @@ const SignupScreen = ({navigator}: any) => {
             })
               setValue('state', item.value);
               setFilterCities(cities);   
-              console.log('dd', filterCities);
-              console.log('ff', control._formValues)
-               
           }}
         />
       <Dropdown

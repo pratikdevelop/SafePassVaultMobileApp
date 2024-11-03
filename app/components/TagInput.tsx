@@ -6,9 +6,9 @@ const TagInput = ({ selectedTags, tags, onTagRemove }: any) => {
   const [searchTerm, setSearchTerm] = useState<any>("");
   const [visible, setVisible] = useState(true);
   const [filteredTags, setFilteredTags] = useState<any>([]);
-  useEffect(() => {
-    setFilteredTags(tags);
-  }, [tags]);
+  // useEffect(() => {
+  //   setFilteredTags(tags);
+  // }, [tags]);
 
   const onSearchChange = (text: string) => {
     setSearchTerm(text)

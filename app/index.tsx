@@ -25,7 +25,7 @@ const IndexTabs = () => {
           if (route.name === "Home") {
             iconName = "home";
           } else if (route.name === "Profile") {
-            iconName = "person";
+            iconName = "account";
           }
           return <Icon source={iconName} color={color} size={24} />;
         },

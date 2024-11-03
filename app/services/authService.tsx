@@ -9,8 +9,8 @@ class AuthService {
     try {
       const response = await axiosConfig.post(`/auth/register`, signupForm);
       return response.data;
-    } catch (error) {
-      console.error('Error during signup:', error);
+    } catch (error:any) {
+      console.error('Error during signup:', error.message);
       throw error;
     }
   }

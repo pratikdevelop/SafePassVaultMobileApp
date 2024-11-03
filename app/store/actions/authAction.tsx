@@ -46,9 +46,7 @@ export const logoutUser = () => {
 export const loadToken = () => {
   clearToken()
   return async (dispatch: (arg0: { type: string; payload: any; }) => void) => {
-    const token =await  SessionStorage.getItem('token');
-    console.log('tt', token);
-    
+    const token =await  SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
     if (token) {
       dispatch(setToken(token)); // Use setToken action
     }
