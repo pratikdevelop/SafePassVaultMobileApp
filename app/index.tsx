@@ -11,6 +11,7 @@ import SignupScreen from "./screens/SignupScreen";
 import store from "./store/store";
 import { loadToken } from "./store/actions/authAction";
 import { Icon } from "react-native-paper";
+import PasswordResetScreen from "./screens/PasswordResetScreen";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -24,7 +25,7 @@ const IndexTabs = () => {
           if (route.name === "Home") {
             iconName = "home";
           } else if (route.name === "Profile") {
-            iconName = "person";
+            iconName = "account";
           }
           return <Icon source={iconName} color={color} size={24} />;
         },
@@ -65,6 +66,13 @@ const Index = () => {
               name="Login"
               component={LoginScreen}
             />
+            <Stack.Screen 
+            options={{ headerShown: false }}
+            name="forget-password"
+            component={PasswordResetScreen}
+            >
+
+            </Stack.Screen>
             <Stack.Screen
               options={{ headerShown: false }}
               name="Signup"

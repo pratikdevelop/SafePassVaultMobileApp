@@ -1,3 +1,5 @@
+
+
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useForm, Controller } from "react-hook-form";
@@ -9,10 +11,9 @@ import store from "../store/store";
 
 const LoginSchema = Yup.object().shape({
   username: Yup.string().required("Username is required"),
-  password: Yup.string().required("Password is required"),
 });
 
-const LoginScreen = ({ navigation }: { navigation: any }) => {
+const PasswordResetScreen = ({ navigation }: { navigation: any }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -22,10 +23,9 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     resolver: yupResolver(LoginSchema),
     defaultValues: {
       username: "",
-      password: "",
     },
   });
-  
+
 
   const onSubmit = async (data: any) => {
     setIssubmitting(true);
@@ -75,37 +75,14 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               inputMode="email"
               style={{
                 marginBottom: 20,
-                backgroundColor:"white",
-                borderRadius: 0,
+                borderRadius: 20,
                 borderWidth: 0, // Remove border width
               }}
-  
+
             />
           )}
         />
 
-        <Controller
-          control={formValue.control}
-          name="password"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              mode="flat"
-              placeholder="Enter your password"
-              secureTextEntry={hidePassword}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              right={<TextInput.Icon icon={hidePassword ? 'eye-off': 'eye'} onPress={()=>setHidePassword(!hidePassword)} />}
-              textContentType={hidePassword ? 'password':  'none'}
-              style={{
-                marginBottom: 20,
-                borderWidth: 0, 
-                backgroundColor:"white"
-              }}
-              error={formValue.getFieldState('password').invalid}
-            />
-          )}
-        />
         <View
           style={{
             display: "flex",
@@ -122,31 +99,18 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           >
             <Text style={styles.link}> Create Account</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate('forget-password')} style={styles.linkContainer}>
+          <TouchableOpacity style={styles.linkContainer}>
             <Text style={styles.link}>Forgot Password</Text>
           </TouchableOpacity>
         </View>
 
         <Button
           mode="contained"
-          buttonColor="blue"
-          textColor="white"
           aria-disabled = {!formValue.formState.isValid}
           onPress={formValue.handleSubmit(onSubmit)}
           disabled={isSubmitting || !!Object.keys(formValue.formState.errors).length}
-          style={{
-            width: '100%',
-            height: 50,
-            borderRadius:0,
-          }}
         >
-            <Text style={{
-              fontSize:20,
-              fontFamily:"sans serif",
-              fontWeight:600
-            }}>
-              Login
-            </Text>
+          {isSubmitting ? "Loading..." : "Login"}
         </Button>
       </View>
     </View>
@@ -170,7 +134,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 30,
     textAlign: "center",
-    
+    fontFamily: "cursive",
   },
   linkContainer: {
     marginVertical: 12,
@@ -182,4 +146,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default PasswordResetScreen;

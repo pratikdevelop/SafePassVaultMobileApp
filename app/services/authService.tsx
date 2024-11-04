@@ -9,8 +9,8 @@ class AuthService {
     try {
       const response = await axiosConfig.post(`/auth/register`, signupForm);
       return response.data;
-    } catch (error) {
-      console.error('Error during signup:', error);
+    } catch (error:any) {
+      console.error('Error during signup:', error.message);
       throw error;
     }
   }
@@ -50,7 +50,6 @@ class AuthService {
   async changePassword(password: any, id: any) {
     try {
       const response = await axiosConfig.patch(`/auth/change-password/${id}`, { password });
-      console.log('Password change successful');
       return response.data;
     } catch (error) {
       console.error('Error during password change:', error);
@@ -62,8 +61,8 @@ class AuthService {
     try {
       const response = await axiosConfig.post(`/auth/login`, loginFormValue);
       return response.data;
-    } catch (error) {
-      console.error('Error during login:', error);
+    } catch (error: any) {
+      console.error('Error during login:', error.message);
       throw error;
     }
   }

@@ -1,71 +1,100 @@
-import React, { useRef } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { Icon } from "react-native-paper";
+import React from "react";
+import { Modal, View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 
-const BottomMenu = ({ closeMenu, bottomSheetRef }: any) => {
-  const items: any[] = [
-    { id: "1", title: "Launch Website", icon: "folderopen", action: "launch" },
-    { id: "2", title: "Edit password", icon: "edit", action: "edit" },
-    { id: "3", title: "copy password", icon: "copy1", action: "copy_password" },
-    { id: "4", title: "Copy Username", icon: "copy1", action: "copy_username" },
-    { id: "5", title: "Copy website", icon: "copy1", action: "copy_website" },
-    { id: "6", title: "Delete password", icon: "delete", action: "delete" },
-    { id: "7", title: "Share password", icon: "sharealt", action: "share" },
-    { id: "8", title: "View password", icon: "eye", action: "passwordView" },
+const BottomMenu = ({ handleCloseBottomSheet, isBottomSheetOpen, type='passwords' }: any) => {
+  const windowHeight = Dimensions.get('window').height;
+
+  // List items to render
+  const items = [
+    { id: "1", type: ['passwords'], title: "Launch Website", icon: "launch", action: "launch" },
+    { id: "2", type: ['passwords', 'notes'], title: "Edit", icon: "pencil", action: "edit" },
+    { id: "3", type: ['passwords'], title: "Copy Password", icon: "content-copy", action: "copy_password" },
+    { id: "4", type: ['passwords'], title: "Copy Username", icon: "content-copy", action: "copy_username" },
+    { id: "5", type: ['passwords'], title: "Copy Website", icon: "content-copy", action: "copy_website" },
+    { id: "6",  type: ['passwords', 'notes'], title: "Delete", icon: "delete", action: "delete" },
+    { id: "7",  type: ['passwords', 'notes'], title: "Share", icon: "share-variant", action: "share" },
+    { id: "8",  type: ['passwords', 'notes'], title: "View ", icon: "eye", action: "passwordView" },
   ];
 
   return (
-    <View style={styles.container}>
-      <BottomSheet
-        index={0}
-        ref={bottomSheetRef}
-        snapPoints={["100%"]}
-        style={{
-          borderRadius: 0,
-          backgroundColor: "white",
-          borderTopColor: "gray",
-        }}
-      >
-        <BottomSheetFlatList
-          data={items}
-          style={{ borderCurve: "circular", borderRadius: 0 }}
-          keyExtractor={(item: { id: any; }) => item.id}
-          renderItem={({ item }: any) => (
-            <TouchableOpacity
-              key={item.id}
-              onPress={() =>  closeMenu(item.action)}
-            >
-              <View style={styles.item}>
-                <Icon  color={"#d33e3"} size={24} source={item.icon}></Icon>
-
-                <Text style={styles.title}>{item.title}</Text>
-              </View>
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isBottomSheetOpen}
+      onRequestClose={handleCloseBottomSheet}
+    >
+      <View style={styles.overlay}>
+        <View style={[styles.bottomSheet, { height: windowHeight * 0.6 }]}>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.headerTitle}>Options</Text>
+            <TouchableOpacity onPress={handleCloseBottomSheet}>
+              <Text style={styles.closeButton}>Close</Text>
             </TouchableOpacity>
-          )}
-        />
-      </BottomSheet>
-    </View>
+          </View>
+          
+          {/* Divider */}
+          <View style={styles.divider} />
+
+          {/* List of items */}
+          {items.map((item) => (
+           <View  key={item.id}> {
+              item.type.includes(type) && (
+                <TouchableOpacity key={item.id} onPress={() =>handleCloseBottomSheet(item.action)}>
+                  <View style={styles.item}>
+                    <Text style={styles.itemText}>{item.title}</Text>
+                  </View>
+                </TouchableOpacity>
+              )
+
+            }
+            </View>
+          ))}
+        </View>
+      </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 24,
+  overlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  bottomSheet: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 25,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  closeButton: {
+    color: 'red',
+    fontWeight: 'bold',
+  },
+  divider: {
+    opacity: 0.2,
+    height: 1,
+    backgroundColor: '#86827e',
+    marginVertical: 16,
   },
   item: {
-    padding: 16,
-    borderBottomWidth: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    gap: 15,
-    borderBottomColor: "#ccc",
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 16,
   },
-  title: {
+  itemText: {
     fontSize: 16,
   },
 });

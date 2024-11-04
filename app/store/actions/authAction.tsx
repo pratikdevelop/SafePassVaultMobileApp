@@ -22,7 +22,7 @@ export const loginUser = (username: string, password: string): ThunkAction<Promi
         if (response.mfaRequired) {
           return { mfaRequired: true, mfaMethod: response.mfaMethod };
         } else {
-          SessionStorage.setItem('token', response.token);
+          await SessionStorage.setItem('token', response.token);
           dispatch(setToken(response.token));
           return { success: true };
         }
@@ -44,8 +44,9 @@ export const logoutUser = () => {
 
 // Load token from SessionStorage
 export const loadToken = () => {
-  return (dispatch: (arg0: { type: string; payload: any; }) => void) => {
-    const token = SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzEyM2JmNjJkMjZmZjMzNjM0NWYxN2UiLCJpYXQiOjE3Mjk3Njc2ODF9.5SQUaeELUbwJvIIfPqtz9ILSYA_lbSm2uCXICTRVtKA';
+  clearToken()
+  return async (dispatch: (arg0: { type: string; payload: any; }) => void) => {
+    const token =await  SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
     if (token) {
       dispatch(setToken(token)); // Use setToken action
     }

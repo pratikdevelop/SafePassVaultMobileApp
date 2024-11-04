@@ -19,7 +19,6 @@ const MFAVerificationScreen = ({ navigation, route }:
     try {
       const apiUrl = '/auth/verify-mfa';
       const response = await axiosConfig.post(apiUrl, { mfaCode, email })
-      console.log(response.data);
       await localStorage.setItem('token', response.data.token)
       navigation.navigate('Home');
     } catch (error: any) {
