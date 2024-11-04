@@ -1,6 +1,6 @@
 import axios from 'axios';
 const axiosConfig = axios.create({
-    baseURL: 'https://vixol72czg.execute-api.us-east-1.amazonaws.com/api',
+    baseURL: 'http://10.0.2.2:3000/api',
     headers: {
         'Content-Type': 'application/json',
     },

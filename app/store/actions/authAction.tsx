@@ -28,7 +28,7 @@ export const loginUser = (username: string, password: string): ThunkAction<Promi
         }
     
     } catch (error: any) {
-      console.log('Login error:', error.message);
+      console.log('Login error:', JSON.stringify(error));
       dispatch({ type: LOGIN_FAILURE, payload: error.message });
       return { success: false, message: error.message };
     }
@@ -46,7 +46,7 @@ export const logoutUser = () => {
 export const loadToken = () => {
   clearToken()
   return async (dispatch: (arg0: { type: string; payload: any; }) => void) => {
-    const token =await  SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
+    const token =await  SessionStorage.getItem('token');
     if (token) {
       dispatch(setToken(token)); // Use setToken action
     }
