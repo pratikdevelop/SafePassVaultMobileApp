@@ -30,23 +30,3 @@ jobs:
 
       - name: 🚀 Build app
         run: eas build --platform android --non-interactive  # Changed to build only for Android
-
-      - name: 🔗 Get build status
-        run: |
-          echo "Waiting for build to complete..."
-          BUILD_ID=$(cat eas.json | jq -r '.builds[0].id')
-          echo "Build ID: $BUILD_ID"
-          while true; do
-            STATUS=$(eas build:list --json | jq -r ".builds[] | select(.id == \"$BUILD_ID\") | .status")
-            echo "Current build status: $STATUS"
-            if [[ "$STATUS" == "finished" ]]; then
-              break
-            fi
-            sleep 10
-          done
-
-      - name: 🔗 Share URL
-        run: |
-          echo "Fetching the download link..."
-          BUILD_URL=$(eas build:list --json | jq -r ".builds[] | select(.id == \"$BUILD_ID\") | .artifacts[0].url")
-          echo "Your build URL is: $BUILD_URL"
