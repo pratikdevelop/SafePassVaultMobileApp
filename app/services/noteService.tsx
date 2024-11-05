@@ -2,7 +2,6 @@ import axiosConfig from "@/axios-config";
 import { AxiosError } from "axios";
 import SessionStorage from 'react-native-session-storage';
 
-
 export interface Note {
   id?: string;
   title?: string;
@@ -14,140 +13,133 @@ export interface SharePasswordResponse {
   shareLink: string;
 }
 
-class NoteService {
+const apiUrl = '/notes';
 
-  private apiUrl: string;
-  private token : string = SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk'
-
-  constructor() {
-    this.apiUrl = `/notes`;
-  }
+const NoteService = {
+  // Helper to retrieve token
+  async getToken() {
+    return await SessionStorage.getItem('token');
+  },
 
   // Create a new note card
-  async createNote(note: Note): Promise<any> {
+  async createNote(note: Note): Promise<Note> {
     try {
-      const response = await axiosConfig.post<Note>(`${this.apiUrl}/note`, note,
-        {
-        headers: { Authorization: `Bearer ${this.token}` },
-      }
-      );
-      return response.data;
-    } catch (error: any) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-
-  // Get all note cards
-  async getNotes(searchTerm?: string): Promise<any> {
-    try {
-      const response = await axiosConfig.get<any>(`${this.apiUrl}`, {
-        params: { search: searchTerm },
-        headers: { Authorization: `Bearer ${this.token}` },
+      const token = await this.getToken();
+      const response = await axiosConfig.post<Note>(`${apiUrl}/note`, note, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
     } catch (error: any) {
       this.handleError(error);
       throw error;
     }
-  }
+  },
+
+  // Get all note cards
+  async getNotes(searchTerm?: string): Promise<Note[]> {
+    try {
+      const token = await this.getToken();
+      const response = await axiosConfig.get<Note[]>(`${apiUrl}`, {
+        params: { search: searchTerm },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      this.handleError(error);
+      throw error;
+    }
+  },
 
   // Get a note card by ID
   async getNoteById(id: string): Promise<Note> {
     try {
-      const response = await axiosConfig.get<Note>(`${this.apiUrl}/${id}`,
-        {
-        headers: { Authorization: `Bearer ${this.token}` },
-      }
-      );
-      return response.data;
-    } catch (error: any) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-
-  // Update a note card by ID
-  async updateNote(id: string, note: Partial<Note>): Promise<Note> {
-    try {
-      const response = await axiosConfig.patch<Note>(`${this.apiUrl}/${id}`, note,
-        {
-        headers: { Authorization: `Bearer ${this.token}` },
-      }
-      );
-      return response.data;
-    } catch (error: any) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-
-  // Delete a note card by ID
-  async deleteNote(id: string): Promise<void> {
-    try {
-      await axiosConfig.delete(`${this.apiUrl}/${id}`,
-        {
-        headers: { Authorization: `Bearer ${this.token}` },
-      }
-      );
-    } catch (error: any) {
-      this.handleError(error);
-      throw error;
-    }
-  }
-
-  // Share Password
-  async sharePassword(passwordId: string): Promise<SharePasswordResponse> {
-    try {
-      const response = await axiosConfig.post<SharePasswordResponse>(`${this.apiUrl}/share/${passwordId}`, {},
-        {
-        headers: { Authorization: `Bearer ${this.token}` },
-      }
-      );
-      return response.data;
-    } catch (error: any) {
-      console.error('Error generating share link:', error);
-      throw error;
-    }
-  }
-
-  // Export Notes as CSV
-  async exportNotesAsCsv(ids: string): Promise<Blob> {
-    try {
-      const response = await axiosConfig.get(`${this.apiUrl}/export`, {
-        params: { ids },
-        responseType: 'blob',
-        headers: { Authorization: `Bearer ${this.token}` },
+      const token = await this.getToken();
+      const response = await axiosConfig.get<Note>(`${apiUrl}/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
     } catch (error: any) {
       this.handleError(error);
       throw error;
     }
-  }
+  },
 
-  // Add to Favorites
-  async addToFavorites(noteId: string): Promise<void> {
+  // Update a note card by ID
+  async updateNote(id: string, note: Partial<Note>): Promise<Note> {
     try {
-      await axiosConfig.post(`${this.apiUrl}/note/${noteId}/favorite`, {},
-        {
-        headers: { Authorization: `Bearer ${this.token}` },
-      }
-      );
+      const token = await this.getToken();
+      const response = await axiosConfig.patch<Note>(`${apiUrl}/${id}`, note, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
     } catch (error: any) {
       this.handleError(error);
       throw error;
     }
-  }
+  },
+
+  // Delete a note card by ID
+  async deleteNote(id: string): Promise<void> {
+    try {
+      const token = await this.getToken();
+      await axiosConfig.delete(`${apiUrl}/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error: any) {
+      this.handleError(error);
+      throw error;
+    }
+  },
+
+  // Share Password
+  async sharePassword(passwordId: string): Promise<SharePasswordResponse> {
+    try {
+      const token = await this.getToken();
+      const response = await axiosConfig.post<SharePasswordResponse>(`${apiUrl}/share/${passwordId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      this.handleError(error);
+      throw error;
+    }
+  },
+
+  // Export Notes as CSV
+  async exportNotesAsCsv(ids: string): Promise<Blob> {
+    try {
+      const token = await this.getToken();
+      const response = await axiosConfig.get(`${apiUrl}/export`, {
+        params: { ids },
+        responseType: 'blob',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      this.handleError(error);
+      throw error;
+    }
+  },
+
+  // Add to Favorites
+  async addToFavorites(noteId: string): Promise<void> {
+    try {
+      const token = await this.getToken();
+      await axiosConfig.post(`${apiUrl}/note/${noteId}/favorite`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error: any) {
+      this.handleError(error);
+      throw error;
+    }
+  },
 
   // Error handling
-  private handleError(error: AxiosError): void {
-    console.error('An error occurred:', error,
-      {
-        headers: { Authorization: `Bearer ${this.token}` },
-      }
-    );
+  handleError(error: AxiosError): void {
+    console.error('An error occurred:', error);
+    // Additional error handling logic can be added here if necessary
   }
+<<<<<<< HEAD
 
   async postComment(_id: any, newComment: string) {
     try {
@@ -175,5 +167,8 @@ class NoteService {
     }
   }
 }
+=======
+};
+>>>>>>> a2906a5f0fac6de776573541284bf2c1eb8c7f2b
 
-export default new NoteService();
+export default NoteService;
