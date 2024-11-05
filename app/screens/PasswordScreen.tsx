@@ -31,6 +31,7 @@ const PasswordScreen = ({ navigation }: any) => {
 
   let toggleDrawer = () => {
     setDrawerRef(false);
+    getPasswords();
   };
   // Function to close the bottom sheet
   const handleCloseBottomSheet = (_action: string) => {
@@ -101,7 +102,7 @@ const PasswordScreen = ({ navigation }: any) => {
                     icon="dots-vertical"
                     mode="contained"
                     onPress={() => {
-                      setPassword(item);                  
+                      setPassword(item);
                       setIsBottomSheetOpen(true);
                     }}
                   ></IconButton>
@@ -163,7 +164,7 @@ const PasswordScreen = ({ navigation }: any) => {
       <IconButton
         icon="plus"
         size={28}
-        containerColor="blue"
+        containerColor="blue" 
         iconColor="white"
         style={styles.newPasswordButton}
         onPress={createPassword}

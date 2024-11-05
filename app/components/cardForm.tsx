@@ -36,6 +36,7 @@ const CardForm = ({ isSidebarOpen, setSidebarOpen, selectedCards }: any) => {
       console.log("Credit card created:", response);
       Alert.alert("Success", "Credit card saved successfully");
       reset();
+      setSidebarOpen(false)
     } catch (error) {
       console.error("Failed to save credit card:", error);
       Alert.alert("Error", "Failed to save credit card");

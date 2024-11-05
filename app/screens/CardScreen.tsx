@@ -21,12 +21,12 @@ const CardComponent = ({ navigation }: any) => {
   const isFocused = useIsFocused(); // React Navigation hook for reloading on focus
 
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused || isSidebarOpen === false) {
       fetchCards();
       setSidebarOpen(false);
       setModalVisible(false);
     }
-  }, [isFocused]);
+  }, [isFocused, isSidebarOpen]);
 
   const fetchCards = async () => {
     try {

@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import TagInput from "./TagInput";
 import PasswordService from "../services/passwordservice";
 import CommonService from "../services/CommonService";
+import FolderComponent from "./FolderComponent";
 
 interface PasswordFormProps {
   showModel: boolean;
@@ -201,7 +202,8 @@ const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) =>
         )}
 
         {/* Tag Input Component */}
-        {/* <TagInput selectedTags={selectedTags} tags={tags} /> */}
+        <TagInput selectedTags={selectedTags} tags={tags} />
+        <FolderComponent type={'passwords'}/>
 
         {/* Actions */}
         <View style={styles.actions}>

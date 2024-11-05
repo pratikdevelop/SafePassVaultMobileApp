@@ -1,6 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, GestureResponderEvent } from "react-native";
-import { Button, Chip, Menu, Portal, Provider, TextInput } from "react-native-paper";
+import {
+  Button,
+  Chip,
+  Menu, TextInput
+} from "react-native-paper";
 
 const TagInput = ({ selectedTags, tags, onTagRemove }: any) => {
   const [searchTerm, setSearchTerm] = useState<any>("");
@@ -11,7 +15,7 @@ const TagInput = ({ selectedTags, tags, onTagRemove }: any) => {
   // }, [tags]);
 
   const onSearchChange = (text: string) => {
-    setSearchTerm(text)
+    setSearchTerm(text);
     if (text) {
       const filtered = tags?.filter((tag: { name: string }) =>
         tag.name.toLowerCase().includes(text.toLowerCase())
@@ -22,13 +26,10 @@ const TagInput = ({ selectedTags, tags, onTagRemove }: any) => {
     }
   };
 
-  function closeMenu(): void {
-    
-  }
+  function closeMenu(): void {}
 
   function openMenu(event: GestureResponderEvent): void {
-    setVisible(true)
-    
+    setVisible(true);
   }
 
   return (
@@ -40,31 +41,51 @@ const TagInput = ({ selectedTags, tags, onTagRemove }: any) => {
           </Chip>
         ))}
       </View>
-         
+
       <TextInput
         value={searchTerm}
         verticalAlign="middle"
         onChangeText={onSearchChange}
         placeholder="Search tags"
         style={styles.textInput}
-      
       />
-        <Menu visible={visible}
+      <Menu
+        visible={visible}
         onDismiss={closeMenu}
         anchorPosition="top"
-        anchor={<Button onPress={openMenu}>Show menu</Button>}>
-
-
-         <Menu.Item title="addtag" onPress={() => { /* Handle selection */ }} />
-    <Menu.Item title="aaa" onPress={() => { /* Handle selection */ }} />
-    <Menu.Item title="aaa4" onPress={() => { /* Handle selection */ }} />
-    <Menu.Item title="new tag" onPress={() => { /* Handle selection */ }} />
-    <Menu.Item title="bnmnbm" onPress={() => { /* Handle selection */ }} />
-        </Menu>
-    
-
-
-
+        anchor={<Button onPress={openMenu}>Show menu</Button>}
+      >
+        <Menu.Item
+          title="addtag"
+          onPress={() => {
+            /* Handle selection */
+          }}
+        />
+        <Menu.Item
+          title="aaa"
+          onPress={() => {
+            /* Handle selection */
+          }}
+        />
+        <Menu.Item
+          title="aaa4"
+          onPress={() => {
+            /* Handle selection */
+          }}
+        />
+        <Menu.Item
+          title="new tag"
+          onPress={() => {
+            /* Handle selection */
+          }}
+        />
+        <Menu.Item
+          title="bnmnbm"
+          onPress={() => {
+            /* Handle selection */
+          }}
+        />
+      </Menu>
     </View>
   );
 };
@@ -86,7 +107,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 4,
     padding: 8,
     marginBottom: 8,
