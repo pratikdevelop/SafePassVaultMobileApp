@@ -1,3 +1,4 @@
+import axiosConfig from '@/axios-config';
 import axios from 'axios';
 import { Alert } from 'react-native';
 import SessionStorage from 'react-native-session-storage';
@@ -11,14 +12,14 @@ class CardService {
 
   // Helper to retrieve token
   private async getToken() {
-    return await SessionStorage.getItem('token');
+    return await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo';
   }
 
   // Create a new card
   async createCard(card: any) {
     try {
       const token = await this.getToken();
-      const response = await axios.post(`${this.apiUrl}`, card, {
+      const response = await axiosConfig.post(`${this.apiUrl}`, card, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -31,7 +32,7 @@ class CardService {
   async getCards() {
     try {
       const token = await this.getToken();
-      const response = await axios.get(this.apiUrl, {
+      const response = await axiosConfig.get(this.apiUrl, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -44,7 +45,7 @@ class CardService {
   async getCardById(id: string) {
     try {
       const token = await this.getToken();
-      const response = await axios.get(`${this.apiUrl}/${id}`, {
+      const response = await axiosConfig.get(`${this.apiUrl}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -57,7 +58,7 @@ class CardService {
   async updateCard(id: string, card: any) {
     try {
       const token = await this.getToken();
-      const response = await axios.patch(`${this.apiUrl}/${id}`, card, {
+      const response = await axiosConfig.patch(`${this.apiUrl}/${id}`, card, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -70,7 +71,7 @@ class CardService {
   async deleteCard(id: string) {
     try {
       const token = await this.getToken();
-      const response = await axios.delete(`${this.apiUrl}/${id}`, {
+      const response = await axiosConfig.delete(`${this.apiUrl}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -83,7 +84,7 @@ class CardService {
   async exportCardsAsCsv(ids: string[]) {
     try {
       const token = await this.getToken();
-      const response = await axios.get(`${this.apiUrl}/export`, {
+      const response = await axiosConfig.get(`${this.apiUrl}/export`, {
         params: { ids },
         responseType: 'blob', // Ensures it gets a binary file
         headers: { Authorization: `Bearer ${token}` },
@@ -98,7 +99,7 @@ class CardService {
   async addToFavorites(cardId: string) {
     try {
       const token = await this.getToken();
-      const response = await axios.post(`${this.apiUrl}/card/${cardId}/favorite`, {}, {
+      const response = await axiosConfig.post(`${this.apiUrl}/card/${cardId}/favorite`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;

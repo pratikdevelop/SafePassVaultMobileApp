@@ -18,7 +18,7 @@ const apiUrl = '/notes';
 const NoteService = {
   // Helper to retrieve token
   async getToken() {
-    return await SessionStorage.getItem('token');
+    return await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo';
   },
 
   // Create a new note card
@@ -138,13 +138,12 @@ const NoteService = {
   handleError(error: AxiosError): void {
     console.error('An error occurred:', error);
     // Additional error handling logic can be added here if necessary
-  }
-<<<<<<< HEAD
+  },
 
   async postComment(_id: any, newComment: string) {
     try {
       const token = await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
-      const response = await axiosConfig.post(`${this.apiUrl}/${_id}/comments`, { content:newComment }, {
+      const response = await axiosConfig.post(`${apiUrl}/${_id}/comments`, { content:newComment }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -153,11 +152,11 @@ const NoteService = {
       throw error;
     }
 
-  }
-  async addTag(_id: any, newTag: string) {
+  },
+  async addTag(_id: any, newTag: string): Promise<any> {
     try {
       const token = await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
-      const response = await axiosConfig.post(`${this.apiUrl}/add-tag`, { noteId:_id, tagName: newTag }, {
+      const response = await axiosConfig.post(`${apiUrl}/add-tag`, { noteId:_id, tagName: newTag }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -167,8 +166,5 @@ const NoteService = {
     }
   }
 }
-=======
-};
->>>>>>> a2906a5f0fac6de776573541284bf2c1eb8c7f2b
 
 export default NoteService;

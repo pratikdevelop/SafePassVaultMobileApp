@@ -5,7 +5,7 @@ import CardService from "../services/cardService";
 import { Dropdown } from "react-native-element-dropdown";
 import { Button, TextInput } from "react-native-paper";
 
-const CardForm = ({ isSidebarOpen }: any) => {
+const CardForm = ({ isSidebarOpen, setSidebarOpen, selectedCards }: any) => {
   const cardTypes = [
     { label: "Select Card Type", value: "" },
     { label: "Visa", value: "Visa" },
@@ -47,30 +47,26 @@ const CardForm = ({ isSidebarOpen }: any) => {
       <Text style={styles.title}>Add Credit Card</Text>
 
       <View style={styles.formField}>
-        <Text>Card Type</Text>
-
-            <Dropdown
-            style={[styles.dropdown]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-              data={cardTypes}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={"Select country code"}
-              searchPlaceholder="Search..."
-              value={control._formValues.cardType}
-              onFocus={() => {}}
-              onBlur={() => {}}
-              onChange={(e)=>{
-                control._formValues.cardType = e.value;
-                console.log('fff', e);
-                
-              }}
-            />
+        <Dropdown
+          style={[styles.dropdown]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          inputSearchStyle={styles.inputSearchStyle}
+          iconStyle={styles.iconStyle}
+          data={cardTypes}
+          search
+          labelField="label"
+          valueField="value"
+          placeholder={"Select country code"}
+          searchPlaceholder="Search..."
+          value={control._formValues.cardType}
+          onFocus={() => {}}
+          onBlur={() => {}}
+          onChange={(e) => {
+            control._formValues.cardType = e.value;
+            console.log("fff", e);
+          }}
+        />
 
         {errors.cardType && (
           <Text style={styles.errorText}>Card Type is required.</Text>
@@ -78,13 +74,13 @@ const CardForm = ({ isSidebarOpen }: any) => {
       </View>
 
       <View style={styles.formField}>
-        <Text>Card Holder Name</Text>
         <Controller
           control={control}
           name="cardHolderName"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
+              mode="outlined"
               style={styles.input}
               placeholder="Card Holder Name"
               onBlur={onBlur}
@@ -99,13 +95,13 @@ const CardForm = ({ isSidebarOpen }: any) => {
       </View>
 
       <View style={styles.formField}>
-        <Text>Card Number</Text>
         <Controller
           control={control}
           name="cardNumber"
           rules={{ required: true, pattern: /^[0-9]{16}$/ }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
+              mode="outlined"
               style={styles.input}
               placeholder="Card Number"
               keyboardType="numeric"
@@ -123,13 +119,13 @@ const CardForm = ({ isSidebarOpen }: any) => {
       </View>
 
       <View style={styles.formField}>
-        <Text>Expiry Date</Text>
         <Controller
           control={control}
           name="expiryDate"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
+              mode="outlined"
               style={styles.input}
               placeholder="MM/YY"
               onBlur={onBlur}
@@ -144,13 +140,13 @@ const CardForm = ({ isSidebarOpen }: any) => {
       </View>
 
       <View style={styles.formField}>
-        <Text>CVV</Text>
         <Controller
           control={control}
           name="CVV"
           rules={{ required: true, pattern: /^[0-9]{3,4}$/ }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
+              mode="outlined"
               style={styles.input}
               placeholder="CVV"
               keyboardType="numeric"
@@ -166,19 +162,21 @@ const CardForm = ({ isSidebarOpen }: any) => {
       </View>
 
       <View style={styles.formField}>
-        <Text>Billing Address</Text>
         <Controller
           control={control}
           name="billingAddress"
           rules={{ required: true }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
+              mode="outlined"
               style={styles.input}
               placeholder="Billing Address"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               multiline
+              numberOfLines={4}
+            
             />
           )}
         />
@@ -188,9 +186,15 @@ const CardForm = ({ isSidebarOpen }: any) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button mode="outlined" onPress={handleSubmit(onSubmit)} >
-            <Text>Submit</Text>
-            </Button>
+        <Button mode="contained"  buttonColor="gray" onPress={() => {
+          setSidebarOpen(false);
+        }} >
+          <Text >cancel</Text>
+
+        </Button>
+        <Button mode="outlined" buttonColor="slate" onPress={handleSubmit(onSubmit)}>
+          Submit
+        </Button>
       </View>
     </View>
   );
@@ -213,7 +217,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   input: {
-    height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 4,
@@ -235,8 +238,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    marginBottom:20,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 0.5,
     paddingHorizontal: 8,
   },
@@ -244,23 +246,22 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: 'absolute',
-    backgroundColor: 'white',
+    position: "absolute",
+    backgroundColor: "white",
     left: 22,
     top: 8,
     zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 14,
-    color:"gray"
+    color: "gray",
   },
   placeholderStyle: {
     fontSize: 16,
-    color:"gray"
-
+    color: "gray",
   },
   selectedTextStyle: {
     fontSize: 16,
-    color:"gray"
+    color: "gray",
   },
   iconStyle: {
     width: 20,

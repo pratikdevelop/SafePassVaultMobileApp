@@ -19,7 +19,6 @@ const IndexTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }: any) => ({
-        // eslint-disable-next-line react/no-unstable-nested-components
         tabBarIcon: ({ color, size }: any) => {
           let iconName = "";
           if (route.name === "Home") {
