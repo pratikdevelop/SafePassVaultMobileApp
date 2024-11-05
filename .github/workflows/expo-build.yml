@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
@@ -23,7 +24,13 @@ jobs:
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
+          expo-version: latest  # Specify expo-version to ensure expo-cli is installed
           token: ${{ secrets.EXPO_TOKEN }}
+          expo-cache: true
+          eas-cache: true
+
+      - name: 🏗 Install EAS-CLI
+        run: npm install -g eas-cli@latest  # Ensures eas-cli is up-to-date and correctly installed
 
       - name: 📦 Install dependencies
         run: npm install --legacy-peer-deps
