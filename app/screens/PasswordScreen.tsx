@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { TextInput, IconButton, List, Text } from "react-native-paper";
-import PasswordViewScreen from "./PasswordViewScreen";
+import PasswordViewScreen from "../components/PasswordViewScreen";
 import service from "../services/passwordservice"; // Adjust the import path as necessary
 import PasswordForm from "@/app/components/PasswordForm";
 import Confirmation from "../components/Confirmation";
@@ -13,7 +13,6 @@ const PasswordScreen = ({ navigation }: any) => {
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string | undefined>();
   const [password, setPassword] = useState<any>(null);
-  const [openDrawer, setDrawerOpen] = useState<boolean>(false);
   const [showModel, setShowModel] = useState<boolean>(false);
   const [confirmModel, setConfirmModel] = useState(false);
   const [drawerRef, setDrawerRef] = useState<any>();
@@ -39,7 +38,7 @@ const PasswordScreen = ({ navigation }: any) => {
       setConfirmModel(true);
     } else if (_action === "edit") {
       setShowModel(true);
-    } else if (_action === "passwordView") {
+    } else if (_action === "view") {
       setDrawerRef(true);
     }
     setIsBottomSheetOpen(false);
@@ -47,7 +46,6 @@ const PasswordScreen = ({ navigation }: any) => {
 
   const createPassword = () => {
     setPassword(null);
-    setDrawerOpen(false);
     setShowModel(true);
   };
   const handleConfirm = () => {
@@ -152,7 +150,6 @@ const PasswordScreen = ({ navigation }: any) => {
         open={drawerRef}
         position={"right"}
         drawerContent={PasswordViewScreen({
-          openDrawer,
           toggleDrawer,
           password,
           drawerRef,

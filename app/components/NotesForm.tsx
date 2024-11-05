@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Appbar, TextInput, Button, Dialog, Portal } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
@@ -8,8 +8,14 @@ interface FormValues {
   content: string;
 }
 
-const NotesForm = ({ visible, onDismiss, onSubmit }: { visible: boolean, onDismiss: () => void, onSubmit: (data: FormValues) => void }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm<FormValues>();
+const NotesForm = ({ visible, onDismiss, onSubmit, note }: { visible: boolean, onDismiss: () => void, onSubmit: (data: FormValues) => void, note: any }) => {
+  const { control, handleSubmit,setValue, formState: { errors } } = useForm<FormValues>();
+  useEffect(()=>{
+    if (note){
+      setValue('title', note.title);
+      setValue('content', note.content);
+    }
+  }, [note])
 
   return (
     <Portal>

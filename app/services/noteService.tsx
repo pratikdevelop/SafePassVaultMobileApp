@@ -15,6 +15,7 @@ export interface SharePasswordResponse {
 }
 
 class NoteService {
+
   private apiUrl: string;
   private token : string = SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk'
 
@@ -146,6 +147,32 @@ class NoteService {
         headers: { Authorization: `Bearer ${this.token}` },
       }
     );
+  }
+
+  async postComment(_id: any, newComment: string) {
+    try {
+      const token = await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
+      const response = await axiosConfig.post(`${this.apiUrl}/${_id}/comments`, { content:newComment }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      throw error;
+    }
+
+  }
+  async addTag(_id: any, newTag: string) {
+    try {
+      const token = await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
+      const response = await axiosConfig.post(`${this.apiUrl}/add-tag`, { noteId:_id, tagName: newTag }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error adding tag to password:', error);
+      throw error;
+    }
   }
 }
 

@@ -4,6 +4,9 @@ import { DataTable, Snackbar, TextInput, IconButton } from "react-native-paper";
 import NotesForm from "../components/NotesForm";
 import noteService from "../services/noteService";
 import BottomMenu from "../components/BottomDrawer";
+import NoteView from "../components/NoteView";
+import MenuDrawer from "react-native-side-drawer";
+import Confirmation from "../components/Confirmation";
 
 const NotesScreen = () => {
   const [notes, setNotes] = useState<any[]>([]);
@@ -14,6 +17,9 @@ const NotesScreen = () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [drawerRef, setDrawerRef] = useState<any>();
+  const [confirmModel, setConfirmModel] = useState(false);
+
 
   useEffect(() => {
     getNotes();
@@ -42,16 +48,54 @@ const NotesScreen = () => {
       setConfirmModel(true); // This function can be defined as per your requirement
     } else if (_action === "edit") {
       setVisible(true);
-    } else if (_action === "passwordView") {
+    } else if (_action === "view") {
       setDrawerRef(true); // This function can be defined as per your requirement
     }
     setIsBottomSheetOpen(false);
   };
 
+  let toggleDrawer = () => {
+    setDrawerRef(false);
+  };
+
+  const [newTag, setNewTag] = useState<any>("");
+  const [newComment, setNewComment] = useState<any>("");
+
+  const addTag = async () => {
+    if (newTag !== "") {
+      try {
+        const response = await noteService.addTag(note._id, newTag);
+        setNewTag("");
+        note.tags.push(response.tag);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const addComment = async () => {
+    if (newComment !== "") {
+      try {
+        const response = await noteService.postComment(note._id, newComment);
+        setNewComment("");
+        note.comments.push(response.comment);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const removeTag = (_id: React.Key): void => {
+    console.log("Tag removed:", _id);
+    // Implementation to remove the tag
+  };
   const handleAddNote = async (data: any) => {
     setLoading(true);
     try {
-      const response = await noteService.createNote(data);
+      const response =
+        note && note._id
+          ? await noteService.updateNote(note._id, data)
+          : await noteService.createNote(data);
       console.log("response", response);
       setSnackbarMessage("Note added successfully!");
       setSnackbarVisible(true);
@@ -64,6 +108,13 @@ const NotesScreen = () => {
       setLoading(false);
       setVisible(false);
     }
+  };
+
+  const handleConfirm = () => {
+    noteService.deleteNote(note._id).then((response: any) => {
+      getNotes();
+      setConfirmModel(false);
+    });
   };
 
   const toggleFavourite = async (_id: any) => {
@@ -136,11 +187,32 @@ const NotesScreen = () => {
               ))}
             </DataTable>
           </ScrollView>
-
+          <MenuDrawer
+            open={drawerRef}
+            position={"right"}
+            drawerContent={NoteView({
+              toggleDrawer,
+              note,
+              addTag, addComment,
+              newComment, newTag, setNewTag, setNewComment
+            })}
+            drawerPercentage={100}
+            animationTime={250}
+            overlay={true}
+            opacity={0.4}
+          />
+          <Confirmation
+            confirmModel={confirmModel}
+            title={"ConFirmation Dialog"}
+            description={"Are You  Sure To delete this password?"}
+            handleConfirm={handleConfirm}
+            cancel={() => setConfirmModel(false)}
+          />
           <NotesForm
             visible={visible}
             onDismiss={() => setVisible(false)}
             onSubmit={handleAddNote}
+            note={note}
           />
 
           <BottomMenu
@@ -197,11 +269,3 @@ const styles = StyleSheet.create({
 
 export default NotesScreen;
 
-// Stub functions
-function setConfirmModel(value: boolean) {
-  console.log("Confirm model set to:", value);
-}
-
-function setDrawerRef(value: boolean) {
-  console.log("Drawer reference set to:", value);
-}
