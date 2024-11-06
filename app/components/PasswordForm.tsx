@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   actions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: "column",
+    justifyContent:"flex-start",
     marginTop: 20,
   },
   submitButton: {

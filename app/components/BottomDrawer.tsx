@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 import { Modal, View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { Icon } from "react-native-paper";
+import { Icon } from 'react-native-paper';
 
 const BottomMenu = ({ handleCloseBottomSheet, isBottomSheetOpen, type='passwords' }: any) => {
   const windowHeight = Dimensions.get('window').height;
@@ -12,9 +12,9 @@ const BottomMenu = ({ handleCloseBottomSheet, isBottomSheetOpen, type='passwords
     { id: "3", type: ['passwords'], title: "Copy Password", icon: "content-copy", action: "copy_password" },
     { id: "4", type: ['passwords'], title: "Copy Username", icon: "content-copy", action: "copy_username" },
     { id: "5", type: ['passwords'], title: "Copy Website", icon: "content-copy", action: "copy_website" },
-    { id: "6",  type: ['passwords', 'notes'], title: `Delete ${type}`, icon: "delete", action: "delete" },
-    { id: "7",  type: ['passwords', 'notes'], title: `Share ${type}`, icon: "share-variant", action: "share" },
-    { id: "8",  type: ['passwords', 'notes'], title: `View  ${type}`, icon: "eye", action: "view" },
+    { id: "6", type: ['passwords', 'notes'], title: `Delete ${type}`, icon: "delete", action: "delete" },
+    { id: "7", type: ['passwords', 'notes'], title: `Share ${type}`, icon: "share-variant", action: "share" },
+    { id: "8", type: ['passwords', 'notes'], title: `View ${type}`, icon: "eye", action: "view" },
   ];
 
   return (
@@ -39,21 +39,19 @@ const BottomMenu = ({ handleCloseBottomSheet, isBottomSheetOpen, type='passwords
 
           {/* List of items */}
           {items.map((item) => (
-           <View  key={item.id}> {
-              item.type.includes(type) && (
-                <TouchableOpacity key={item.id}  style={{
-                  display:"flex",
-                  alignItems:"center",
-                  justifyContent:"center"
-                }} onPress={() =>handleCloseBottomSheet(item.action)}>
+            <View key={item.id}> 
+              {item.type.includes(type) && (
+                <TouchableOpacity
+                  key={item.id}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                  onPress={() => handleCloseBottomSheet(item.action)}
+                >
                   <View style={styles.item}>
-                    <Icon size={24} source={item.icon} ></Icon>
+                    <Icon size={24} source={item.icon} />
                     <Text style={styles.itemText}>{item.title}</Text>
                   </View>
                 </TouchableOpacity>
-              )
-
-            }
+              )}
             </View>
           ))}
         </View>
@@ -97,7 +95,6 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: 'row',
-    gap:10,
     alignItems: 'center',
     paddingVertical: 16,
   },

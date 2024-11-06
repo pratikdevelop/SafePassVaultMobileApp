@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import folderService from "../services/folderService";
-import { Autocomplete, TextField } from "@mui/material";
+// import { Autocomplete, TextField } from "@mui/material";
 import { UseFormSetValue } from "react-hook-form";
 
 const FolderComponent = ({
@@ -42,7 +42,7 @@ const FolderComponent = ({
         backgroundColor: "white",
       }}
     >
-      <Autocomplete
+      {/* <Autocomplete
         value={
           folders.find(
             (option: any) => option._id === control._formValues.folderId
@@ -55,7 +55,7 @@ const FolderComponent = ({
         renderInput={(params) => (
           <TextField {...params} label="Select Folder" />
         )}
-      />
+      /> */}
     </View>
   );
 };
