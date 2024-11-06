@@ -15,9 +15,12 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@expo/vector-icons": "^14.0.2",
     "@gorhom/bottom-sheet": "^5.0.4",
     "@hookform/resolvers": "^3.9.0",
+    "@mui/material": "^6.1.6",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-material/core": "^1.3.7",
     "@react-navigation/bottom-tabs": "^6.6.1",
@@ -64,6 +67,7 @@
     "react-native-session-storage": "^1.3.2",
     "react-native-side-drawer": "^2.1.0",
     "react-native-stepper-ui": "^0.0.9",
+    "react-native-svg": "^15.8.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
     "react-redux": "^9.1.2",

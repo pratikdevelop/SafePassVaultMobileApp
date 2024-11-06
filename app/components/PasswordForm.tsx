@@ -2,29 +2,35 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { TextInput, Button, Title, HelperText } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
-import TagInput from "./TagInput";
 import PasswordService from "../services/passwordservice";
-import CommonService from "../services/CommonService";
 import FolderComponent from "./FolderComponent";
+import TagComponent from "./TagComponent";
 
 interface PasswordFormProps {
   showModel: boolean;
   hideDialog: (updated?: boolean) => void;
-  password?: {
+  password: {
     _id?: string;
     name: string;
     website: string;
     username: string;
     password: string;
-    tags?: string[];
+    tags: any[];
     description: string;
+    folder: any;
   };
+  tags: any[];
 }
-
-const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) => {
+const PasswordForm = ({
+  showModel,
+  hideDialog,
+  password,
+  tags,
+}: PasswordFormProps) => {
   const {
     control,
     reset,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -34,45 +40,30 @@ const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) =>
       username: "",
       password: "",
       description: "",
+      folderId: "",
+      tags: [],
     },
   });
-
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
-
-  // Load form values when showModel or password changes
   useEffect(() => {
     if (showModel) {
       reset({
-        name: password?.name || "",
-        website: password?.website || "",
-        username: password?.username || "",
-        password: password?.password || "",
-        description: password?.description || "",
+        name: password?.name || "slack",
+        website: password?.website || "https://slack.com",
+        username: password?.username || "test@yopmail.com",
+        password: password?.password || "Access@#$1234",
+        description: password?.description || "g5454354",
+        tags: password?.tags || [],
+        folderId: password?.folder?._id || "",
       });
-      setSelectedTags(password?.tags || []);
     }
   }, [showModel, password, reset]);
-
-  // Fetch tags only once
-  useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const res = await CommonService.searchTags();
-        setTags(res.tags);
-      } catch (error) {
-        console.error("Error fetching tags:", error);
-      }
-    };
-    fetchTags();
-  }, []);
 
   const onSubmit = async (data: any) => {
     try {
       if (password && password._id) {
-        await PasswordService.updatePassword(password._id, { ...data, tags: selectedTags });
+        await PasswordService.updatePassword(password._id, data);
       } else {
-        await PasswordService.addPassword({ ...data, tags: selectedTags });
+        await PasswordService.addPassword(data);
       }
       hideDialog(true);
     } catch (error) {
@@ -86,7 +77,6 @@ const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) =>
         {password ? "Edit Password" : "Add Password"}
       </Title>
       <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
-        
         {/* Name Input */}
         <Controller
           control={control}
@@ -104,7 +94,9 @@ const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) =>
         />
         {errors.name && (
           <HelperText type="error">
-            {errors.name.type === "required" ? "Name is required" : "Invalid name format"}
+            {errors.name.type === "required"
+              ? "Name is required"
+              : "Invalid name format"}
           </HelperText>
         )}
 
@@ -126,7 +118,9 @@ const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) =>
         />
         {errors.website && (
           <HelperText type="error">
-            {errors.website.type === "required" ? "Website is required" : "Invalid website format"}
+            {errors.website.type === "required"
+              ? "Website is required"
+              : "Invalid website format"}
           </HelperText>
         )}
 
@@ -202,8 +196,16 @@ const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) =>
         )}
 
         {/* Tag Input Component */}
-        <TagInput selectedTags={selectedTags} tags={tags} />
-        <FolderComponent type={'passwords'}/>
+        <TagComponent
+          control={control}
+          tags={tags}
+          setValue={setValue}
+        ></TagComponent>
+        <FolderComponent
+          type={"passwords"}
+          setValue={setValue}
+          control={control}
+        />
 
         {/* Actions */}
         <View style={styles.actions}>
@@ -226,9 +228,9 @@ const PasswordForm = ({ showModel, hideDialog, password }: PasswordFormProps) =>
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    flex:1,
-    width:"100%",
-    backgroundColor:"white"
+    flex: 1,
+    width: "100%",
+    backgroundColor: "white",
   },
   title: {
     fontSize: 24,
@@ -252,6 +254,30 @@ const styles = StyleSheet.create({
   submitButton: {
     borderColor: "#007bff",
     borderRadius: 0,
+  },
+  chipContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginBottom: 8,
+  },
+  chip: {
+    margin: 4,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: "gray",
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: "gray",
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });
 

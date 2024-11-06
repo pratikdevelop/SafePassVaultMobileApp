@@ -7,15 +7,31 @@ import PasswordForm from "@/app/components/PasswordForm";
 import Confirmation from "../components/Confirmation";
 import BottomMenu from "../components/BottomDrawer";
 import MenuDrawer from "react-native-side-drawer";
+import CommonService from "../services/CommonService";
 
 const PasswordScreen = ({ navigation }: any) => {
   const [passwords, setPasswords] = useState<any[]>([]);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string | undefined>();
+  const [search, setSearch] = useState<string>("");
   const [password, setPassword] = useState<any>(null);
   const [showModel, setShowModel] = useState<boolean>(false);
   const [confirmModel, setConfirmModel] = useState(false);
   const [drawerRef, setDrawerRef] = useState<any>();
+  const [tags, setTags] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await CommonService.searchTags();
+        console.log("res");
+
+        setTags(res);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+      }
+    };
+    fetchTags();
+  }, []);
   useEffect(() => {
     getPasswords();
   }, [search]);
@@ -33,6 +49,7 @@ const PasswordScreen = ({ navigation }: any) => {
     setDrawerRef(false);
     getPasswords();
   };
+
   // Function to close the bottom sheet
   const handleCloseBottomSheet = (_action: string) => {
     if (_action === "delete") {
@@ -49,8 +66,9 @@ const PasswordScreen = ({ navigation }: any) => {
     setPassword(null);
     setShowModel(true);
   };
+
   const handleConfirm = () => {
-    service.deletePassword(password._id).then((response: any) => {
+    service.deletePassword(password._id).then(() => {
       getPasswords();
       setConfirmModel(false);
     });
@@ -65,9 +83,7 @@ const PasswordScreen = ({ navigation }: any) => {
     }
   };
 
-  const hideDialog: any = () => {
-    console.log("fff");
-
+  const hideDialog = () => {
     setShowModel(false);
   };
 
@@ -105,7 +121,7 @@ const PasswordScreen = ({ navigation }: any) => {
                       setPassword(item);
                       setIsBottomSheetOpen(true);
                     }}
-                  ></IconButton>
+                  />
                 )}
               />
             ))}
@@ -127,34 +143,44 @@ const PasswordScreen = ({ navigation }: any) => {
         isBottomSheetOpen={isBottomSheetOpen}
       />
 
+      {/* Use JSX to pass PasswordForm as component */}
+
       <MenuDrawer
         open={showModel}
         position={"left"}
-        drawerContent={PasswordForm({
-          showModel,
-          hideDialog,
-          password,
-        })}
+        drawerContent={
+          <PasswordForm
+            showModel={showModel}
+            hideDialog={hideDialog}
+            password={password}
+            tags={tags}
+          />
+        }
         drawerPercentage={100}
         animationTime={250}
         overlay={true}
         opacity={0.4}
       />
+
       <Confirmation
         confirmModel={confirmModel}
-        title={"ConFirmation Dialog"}
-        description={"Are You  Sure To delete this password?"}
+        title={"Confirmation Dialog"}
+        description={"Are You Sure To delete this password?"}
         handleConfirm={handleConfirm}
         cancel={() => setConfirmModel(false)}
       />
+
+      {/* Use JSX to pass PasswordViewScreen as component */}
       <MenuDrawer
         open={drawerRef}
         position={"right"}
-        drawerContent={PasswordViewScreen({
-          toggleDrawer,
-          password,
-          drawerRef,
-        })}
+        drawerContent={
+          <PasswordViewScreen
+            toggleDrawer={toggleDrawer}
+            password={password}
+            drawerRef={drawerRef}
+          />
+        }
         drawerPercentage={100}
         animationTime={250}
         overlay={true}
@@ -164,11 +190,11 @@ const PasswordScreen = ({ navigation }: any) => {
       <IconButton
         icon="plus"
         size={28}
-        containerColor="blue" 
+        containerColor="blue"
         iconColor="white"
         style={styles.newPasswordButton}
         onPress={createPassword}
-      ></IconButton>
+      />
     </View>
   );
 };
@@ -189,10 +215,6 @@ const styles = StyleSheet.create({
     right: 20,
     color: "#ff55d3",
     alignItems: "center",
-  },
-  newPasswordButtonText: {
-    color: "white",
-    fontWeight: "bold",
   },
 });
 

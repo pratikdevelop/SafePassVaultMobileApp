@@ -2,11 +2,12 @@ import SessionStorage from "react-native-session-storage";
 import axiosConfig from "../../axios-config";
 import CryptoJS from "react-native-crypto-js";
 import randomstring from "randomstring";
+import { string } from "yup";
 
 const apiUrl = "/passwords";
 
 const PasswordService = {
-  fetchPasswords: async (search = "") => {
+  fetchPasswords: async (search: string) => {
     try {
       const token =
         (await SessionStorage.getItem("token")) ||
@@ -39,10 +40,7 @@ const PasswordService = {
     }
   },
 
-  addPassword: async (password: {
-    key: string | CryptoJS.lib.WordArray;
-    password: string | CryptoJS.lib.WordArray;
-  }) => {
+  addPassword: async (password: any) => {
     try {
       const token =
         (await SessionStorage.getItem("token")) ||
