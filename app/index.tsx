@@ -35,7 +35,9 @@ const IndexTabs = () => {
         name="Home"
         component={HomeScreen}
       />
-      <Tab.Screen name="Profile" component={ProfileSettingsScreen} />
+      <Tab.Screen name="Profile" options={{
+        headerShown:false
+      }} component={ProfileSettingsScreen} />
     </Tab.Navigator>
   );
 };

@@ -6,6 +6,7 @@ import NotesScreen from './NotesScreen';
 import CardScreen from './CardScreen';
 import FileScreen from './FileScreen';
 import { Icon } from 'react-native-paper';
+import AddressScreen from './AddressScreen';
 
 const HomeScreen = () => {
   const Drawer = createDrawerNavigator();
@@ -69,6 +70,17 @@ const HomeScreen = () => {
           return <Icon source='file-outline' size={24} color='#000'></Icon>
         }
       }} name="File Management" component={FileScreen} />
+       <Drawer.Screen options={{
+        headerBackgroundContainerStyle:{
+          borderWidth:1,
+          borderColor:'gray',
+          backgroundColor:"#ff4543"
+        },
+        drawerLabel: 'Addresses',
+        drawerIcon(props) {
+          return <Icon source='office-building' size={24} color='#000'></Icon>
+        }
+      }} name="Addresses" component={AddressScreen} />
     </Drawer.Navigator>
   );
 };
