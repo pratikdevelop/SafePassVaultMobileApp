@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Text,
   TextInput,
@@ -9,6 +9,7 @@ import {
 import { Button, Dialog, Portal } from 'react-native-paper';
 
 const EditProfileModal = ({ visible, onClose, userData, onSave }: any) => {
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [form, setForm] = useState({
     name: userData?.name || '',
     email: userData?.email || '',
@@ -19,6 +20,10 @@ const EditProfileModal = ({ visible, onClose, userData, onSave }: any) => {
     city: userData?.city || '',
     postalCode: userData?.postalCode || '',
   });
+  useEffect(() => {
+    setIsVisible(visible);
+    console.log("editModalVisible updated:", isVisible);
+  }, [visible]);
 
   const handleChange = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -35,7 +40,7 @@ const EditProfileModal = ({ visible, onClose, userData, onSave }: any) => {
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={onClose}>
+      <Dialog visible={isVisible} onDismiss={onClose}>
         <Dialog.Title>Profile</Dialog.Title>
         <Dialog.Content>
           <Text style={styles.subtitle}>

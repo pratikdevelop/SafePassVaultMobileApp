@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import * as ImagePicker from "expo-image-picker";
 
-import { View, Text, StyleSheet, Image, ScrollView, Alert, Modal } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ScrollView,
+  Alert
+} from "react-native";
 import { Appbar, Button } from "react-native-paper";
 import EditProfileModal from "../components/editprofilemodal";
 
 const PersonalDetailsScreen = () => {
-  const [editModalVisible, setEditModalVisible] = useState<any>(null);
+  let show = false;
+  const [editModalVisible, setEditModalVisible] = useState<any>(false);
   const [user, setUser] = useState({
     name: "John Doe",
     role: "admin",
@@ -28,16 +35,16 @@ const PersonalDetailsScreen = () => {
   // Function to handle file selection using ImagePicker
   const onFileSelected = async () => {
     try {
-      const result: any = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        quality: 1,
-      });
-      console.log("ff", result);
+      // const result: any = await ImagePicker.launchImageLibraryAsync({
+      //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      //   allowsEditing: true,
+      //   quality: 1,
+      // });
+      // console.log("ff", result);
 
-      if (!result.canceled) {
-        setUser({ ...user, userImage: result.assets });
-      }
+      // if (!result.canceled) {
+      //   setUser({ ...user, userImage: result.assets });
+      // }
     } catch (error) {
       console.error("File selection error:", error);
       Alert.alert("Error", "Could not select image.");
@@ -46,36 +53,32 @@ const PersonalDetailsScreen = () => {
 
   // Function to handle editing profile
   const editProfile = () => {
-    console.log(`g.b,fblgflk`);
-    setEditModalVisible(true);
-    console.log('fff', editModalVisible);
+    show = true
+    console.log('fff', show);
     
   };
+
 
   const handleSaveProfile = () => {
     Alert.alert("Profile Updated", "Your changes have been saved.");
   };
 
-  const handleCancelEdit = () => {
-  };
+  const handleCancelEdit = () => {};
 
   return (
     <ScrollView style={styles.container}>
       <Appbar.Header
         style={{
           backgroundColor: "#fff",
-          borderColor:"lightgray",
-          shadowColor:"lightgray",
-          borderBottomColor:"gray",
-          borderBottomWidth:1,
+          borderColor: "lightgray",
+          shadowColor: "lightgray",
+          borderBottomColor: "gray",
+          borderBottomWidth: 1,
           elevation: 0,
         }}
       >
         <Appbar.Content title="Personal Information" />
-        <Button
-          mode="contained"
-          onPress={editProfile}
-        >
+        <Button mode="contained" onPress={editProfile}>
           <Text>Edit Profile</Text>
         </Button>
       </Appbar.Header>
@@ -123,23 +126,12 @@ const PersonalDetailsScreen = () => {
               value={user.mfaEnabled ? "Enabled" : "Disabled"}
             />
           </View>
-      </View>
-      <Modal
-      visible={editModalVisible}
-      transparent={true}
-      animationType="fade"
-      >
-        <EditProfileModal
-          visible={editModalVisible}
-          userData={user}
-          onSave={(updatedData: any) => {
-            setUser(updatedData);
-          }}
-        />
-
-      </Modal>
-
         </View>
+          <EditProfileModal
+            visible={show}
+            onClose={() => setEditModalVisible(false)}
+          />
+      </View>
     </ScrollView>
   );
 };
@@ -154,7 +146,7 @@ const DetailItem = ({ label, value }: any) => (
 
 const styles = StyleSheet.create({
   container: {
-    display:"flex",
+    display: "flex",
     flexDirection: "column",
   },
   profileContainer: {
