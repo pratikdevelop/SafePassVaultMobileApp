@@ -90,7 +90,7 @@ const CardComponent = ({ navigation }: any) => {
      <Searchbar
           style={{
             height: 52,
-            width:"85%",
+            width:"100%",
             borderRadius: 0,
             backgroundColor: "white",
             borderWidth: 1,
@@ -101,7 +101,7 @@ const CardComponent = ({ navigation }: any) => {
           onChangeText={setSearchTerm}
           value={searchTerm}
         />
-        <Button
+        {/* <Button
           mode="contained"
           labelStyle={{
             fontSize: 24,
@@ -122,7 +122,7 @@ const CardComponent = ({ navigation }: any) => {
           }}
           buttonColor="slate"
 
-          icon={'menu'} children={undefined}        />
+          icon={'menu'} children={undefined}        /> */}
       </View>
       {/* Card List */}
       <FlatList

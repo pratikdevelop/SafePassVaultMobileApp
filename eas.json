@@ -11,13 +11,16 @@
         "buildType": "apk"
       },
       "ios": {
-        "buildConfiguration": "debug" 
+        "buildConfiguration": "debug"
       }
     },
     "preview": {
       "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
       "ios": {
-        "buildConfiguration": "release" 
+        "buildConfiguration": "release"
       }
     },
     "production": {
@@ -27,12 +30,14 @@
         "buildType": "apk"
       },
       "ios": {
-        "buildConfiguration": "release",  
+        "buildConfiguration": "release",
         "credentialsSource": "remote"
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      
+    }
   }
 }

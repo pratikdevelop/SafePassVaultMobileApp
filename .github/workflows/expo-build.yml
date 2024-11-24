@@ -3,8 +3,8 @@ name: Expo Build Workflow
 on:
   push:
     branches:
-      - main  # Triggers the build when changes are pushed to the main branch
-  workflow_dispatch:  # Allows manual triggering of the workflow
+      - main  # Trigger the workflow on changes to the main branch
+  workflow_dispatch:  # Allow manual trigger of the workflow
 
 jobs:
   build:
@@ -14,17 +14,17 @@ jobs:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
 
-      - name: 🏗 Setup Node
+      - name: 🏗 Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20.x
+          node-version: 18.x  # Use a compatible Node.js version
           cache: npm
 
       - name: 🏗 Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
-          expo-version: latest  # Specify expo-version to ensure expo-cli is installed
+          expo-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
           expo-cache: true
           eas-cache: true
@@ -33,7 +33,9 @@ jobs:
         run: npm install -g eas-cli@latest  # Ensures eas-cli is up-to-date and correctly installed
 
       - name: 📦 Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npm ci  # Clean install for reliable dependency resolution
 
       - name: 🚀 Build app
         run: eas build --platform android --non-interactive
+        env:
+          EXPO_DEBUG: true
