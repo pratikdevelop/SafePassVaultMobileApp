@@ -34,9 +34,15 @@ const ProfileSettingsScreen = () => {
   
   return (
       <Drawer.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
+        screenOptions={
+          {
+            headerTitle:"Profile",
+            headerStyle: {
+              backgroundColor: '#fff',
+              
+            }
+          }
+        }
       >
         {Object.entries(screens).map(([name, Component]: any) => (
           <Drawer.Screen key={name} name={name}   navigationKey={name} children={Component}/>

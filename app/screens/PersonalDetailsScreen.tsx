@@ -6,7 +6,7 @@ import { Appbar, Button } from "react-native-paper";
 import EditProfileModal from "../components/editprofilemodal";
 
 const PersonalDetailsScreen = () => {
-  const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
+  const [editModalVisible, setEditModalVisible] = useState<any>(null);
   const [user, setUser] = useState({
     name: "John Doe",
     role: "admin",
@@ -46,26 +46,28 @@ const PersonalDetailsScreen = () => {
 
   // Function to handle editing profile
   const editProfile = () => {
-    console.log(`
-      g.b,fblgflk`);
-    
+    console.log(`g.b,fblgflk`);
     setEditModalVisible(true);
+    console.log('fff', editModalVisible);
+    
   };
 
   const handleSaveProfile = () => {
-    setEditModalVisible(false);
     Alert.alert("Profile Updated", "Your changes have been saved.");
   };
 
   const handleCancelEdit = () => {
-    setEditModalVisible(false);
   };
 
   return (
     <ScrollView style={styles.container}>
       <Appbar.Header
         style={{
-          backgroundColor: "#15449e",
+          backgroundColor: "#fff",
+          borderColor:"lightgray",
+          shadowColor:"lightgray",
+          borderBottomColor:"gray",
+          borderBottomWidth:1,
           elevation: 0,
         }}
       >
@@ -126,11 +128,9 @@ const PersonalDetailsScreen = () => {
       visible={editModalVisible}
       transparent={true}
       animationType="fade"
-      onRequestClose={() => setEditModalVisible(false)}
       >
         <EditProfileModal
           visible={editModalVisible}
-          onClose={() => setEditModalVisible(false)}
           userData={user}
           onSave={(updatedData: any) => {
             setUser(updatedData);
