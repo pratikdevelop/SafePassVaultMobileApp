@@ -76,8 +76,9 @@ const PersonalDetailsScreen = () => {
           borderBottomWidth: 1,
           elevation: 0,
         }}
+        
       >
-        <Appbar.Content title="Personal Information" />
+        <Appbar.Content  title="Personal Information" />
         <Button mode="contained" onPress={editProfile}>
           <Text>Edit Profile</Text>
         </Button>
@@ -165,7 +166,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 22,
-    fontWeight: "bold",
     fontFamily: "Fantasy",
     marginBottom: 16,
   },
@@ -179,13 +179,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   detailLabel: {
-    fontWeight: "bold",
+    fontWeight: "semibold",
     fontFamily: "Fantasy",
   },
   detailValue: {
     marginLeft: 4,
     fontFamily: "Fantasy",
-    color: "#64748B",
+    color:"gray"
   },
   imageSection: {
     flex: 1,

@@ -3,10 +3,7 @@ import axiosConfig from "../../axios-config";
 
 const CommonService = {
   async getToken() {
-    return (
-      (await SessionStorage.getItem("token")) ||
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo"
-    );
+    return  await SessionStorage.getItem("token");
   },
   searchTags: async () => {
     try {

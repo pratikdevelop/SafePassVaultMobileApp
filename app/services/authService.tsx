@@ -1,5 +1,6 @@
 import axiosConfig from '@/axios-config';
 import axios from 'axios';
+import CommonService from './CommonService';
 
 
 class AuthService {
@@ -69,7 +70,12 @@ class AuthService {
 
   async getProfile() {
     try {
-      const response = await axiosConfig.get(`/auth/profile`);
+      const token = await CommonService.getToken();
+      const response = await axiosConfig.get(`/auth/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+          }
+      });
       this.userProfile = response.data; // Update user profile
       return response.data;
     } catch (error) {
@@ -80,7 +86,7 @@ class AuthService {
 
   async logout() {
     try {
-      const token = localStorage.getItem('token'); // Adjust for your token storage
+      const token = await CommonService.getToken();
       const response = await axiosConfig.post(`/auth/logout`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -109,7 +115,12 @@ class AuthService {
 
   async verifyMFA(mfaData: any) {
     try {
-      const response = await axiosConfig.post(`/auth/verify-mfa`, mfaData);
+      const token = await CommonService.getToken();
+      const response = await axiosConfig.post(`/auth/verify-mfa`, mfaData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+          },
+      });
       return response.data;
     } catch (error) {
       console.error('Error during MFA verification:', error);
@@ -129,7 +140,12 @@ class AuthService {
 
   async updateMfaSettings(settings: any) {
     try {
-      const response = await axiosConfig.post(`/auth/mfa-settings`, settings);
+      const token = await CommonService.getToken();
+      const response = await axiosConfig.post(`/auth/mfa-settings`, settings, {
+        headers: {
+          Authorization: `Bearer ${token}`
+          },
+      });
       return response.data;
     } catch (error) {
       console.error('Error updating MFA settings:', error);
@@ -139,7 +155,12 @@ class AuthService {
 
   async getUsers() {
     try {
-      const response = await axiosConfig.get(`/auth/users`);
+      const token = await CommonService.getToken();
+      const response = await axiosConfig.get(`/auth/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+          }
+      });
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -159,7 +180,12 @@ class AuthService {
 
   async resendInvitation(organizationId: any, recipientId: any) {
     try {
-      const response = await axiosConfig.post(`/auth/resend-invitation/${organizationId}/${recipientId}`, {});
+      const token = await CommonService.getToken()
+      const response = await axiosConfig.post(`/auth/resend-invitation/${organizationId}/${recipientId}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+          }
+      });
       return response.data;
     } catch (error) {
       console.error('Error resending invitation:', error);
@@ -169,7 +195,13 @@ class AuthService {
 
   async updateProfile(profile: any) {
     try {
-      const response = await axiosConfig.patch(`/auth/profile`, profile);
+      const token = await CommonService.getToken();
+      const response = await axiosConfig.patch(`/auth/profile`, profile, {
+        headers: {
+          Authorization: `Bearer ${token}`
+          }
+          
+      });
       return response.data;
     } catch (error) {
       console.error('Error updating profile:', error);

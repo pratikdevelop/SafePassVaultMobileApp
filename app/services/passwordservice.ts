@@ -3,15 +3,14 @@ import axiosConfig from "../../axios-config";
 import CryptoJS from "react-native-crypto-js";
 import randomstring from "randomstring";
 import { string } from "yup";
+import CommonService from "./CommonService";
 
 const apiUrl = "/passwords";
 
 const PasswordService = {
   fetchPasswords: async (search: string) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const { data } = await axiosConfig.get(`${apiUrl}?search=${search}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -42,9 +41,7 @@ const PasswordService = {
 
   addPassword: async (password: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       password.key = randomstring.generate({
         length: 32,
         charset: "alphanumeric",
@@ -70,9 +67,7 @@ const PasswordService = {
 
   deletePassword: async (id: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       await axiosConfig.delete(`${apiUrl}/password/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -84,9 +79,7 @@ const PasswordService = {
 
   addToFavorites: async (passwordId: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/password/${passwordId}/favorite`,
         {},
@@ -103,9 +96,7 @@ const PasswordService = {
 
   updatePassword: async (_id: any, newPasswordObject: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.put(
         `${apiUrl}/password/${_id}`,
         newPasswordObject,
@@ -126,9 +117,7 @@ const PasswordService = {
 
   sharePassword: async (passwordId: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/share/${passwordId}`,
         {},
@@ -145,9 +134,7 @@ const PasswordService = {
 
   searchTags: async (name: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.get(`/tags/search/${name}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -160,9 +147,7 @@ const PasswordService = {
 
   addTag: async (payload: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.post(`/tags/tag`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -175,9 +160,7 @@ const PasswordService = {
 
   exportPasswordsAsCsv: async (ids: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.get(`${apiUrl}/export?ids=${ids}`, {
         responseType: "blob",
         headers: { Authorization: `Bearer ${token}` },
@@ -191,9 +174,7 @@ const PasswordService = {
 
   addTagToPassword: async (passwordId: any, tagName: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/add-tag`,
         { passwordId, tagName },
@@ -210,9 +191,7 @@ const PasswordService = {
 
   postComment: async (passwordId: any, content: any) => {
     try {
-      const token =
-        (await SessionStorage.getItem("token")) ||
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo";
+      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/${passwordId}/comments`,
         { content },

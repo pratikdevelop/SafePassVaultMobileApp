@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import fs from 'fs'; // Import the File System module (if needed for certain environments).
+import { IconButton } from 'react-native-paper';
 
 const Drawer = createDrawerNavigator();
 
@@ -37,15 +38,39 @@ const ProfileSettingsScreen = () => {
         screenOptions={
           {
             headerTitle:"Profile",
+            headerRight(props) {
+              return (
+                <IconButton
+                mode='contained'
+                style={
+                  {
+                    padding: 10,
+                    margin: 10,
+
+                  }
+                }
+                icon={'logout'} onPress={()=>{
+                  console.log('logout pressed');
+                  // Call the logout function here
+                }}></IconButton>
+                );
+            },
             headerStyle: {
               backgroundColor: '#fff',
-              
+              borderColor:"#00000",
+              elevation: 0,
             }
           }
         }
       >
         {Object.entries(screens).map(([name, Component]: any) => (
-          <Drawer.Screen key={name} name={name}   navigationKey={name} children={Component}/>
+          <Drawer.Screen key={name} name={name}  options={{
+            title: name,
+            sceneContainerStyle:{
+              backgroundColor:'#fff',
+              borderTopWidth:2
+            }
+          }}  navigationKey={name} children={Component}/>
         ))}
       </Drawer.Navigator>
   );

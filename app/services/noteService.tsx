@@ -1,6 +1,7 @@
 import axiosConfig from "@/axios-config";
 import { AxiosError } from "axios";
 import SessionStorage from 'react-native-session-storage';
+import CommonService from "./CommonService";
 
 export interface Note {
   id?: string;
@@ -17,14 +18,11 @@ const apiUrl = '/notes';
 
 const NoteService = {
   // Helper to retrieve token
-  async getToken() {
-    return await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA4MDMwMzJ9.ogqjDPWcvj1B5T3T9y1QCHgxNWIgIAQw48fQ8IxtJIo';
-  },
-
+  
   // Create a new note card
   async createNote(note: Note): Promise<Note> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       const response = await axiosConfig.post<Note>(`${apiUrl}/note`, note, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -38,7 +36,7 @@ const NoteService = {
   // Get all note cards
   async getNotes(searchTerm?: string): Promise<Note[]> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       const response = await axiosConfig.get<Note[]>(`${apiUrl}`, {
         params: { search: searchTerm },
         headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +51,7 @@ const NoteService = {
   // Get a note card by ID
   async getNoteById(id: string): Promise<Note> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       const response = await axiosConfig.get<Note>(`${apiUrl}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -67,7 +65,7 @@ const NoteService = {
   // Update a note card by ID
   async updateNote(id: string, note: Partial<Note>): Promise<Note> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       const response = await axiosConfig.patch<Note>(`${apiUrl}/${id}`, note, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -81,7 +79,7 @@ const NoteService = {
   // Delete a note card by ID
   async deleteNote(id: string): Promise<void> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       await axiosConfig.delete(`${apiUrl}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -94,7 +92,7 @@ const NoteService = {
   // Share Password
   async sharePassword(passwordId: string): Promise<SharePasswordResponse> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       const response = await axiosConfig.post<SharePasswordResponse>(`${apiUrl}/share/${passwordId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -108,7 +106,7 @@ const NoteService = {
   // Export Notes as CSV
   async exportNotesAsCsv(ids: string): Promise<Blob> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       const response = await axiosConfig.get(`${apiUrl}/export`, {
         params: { ids },
         responseType: 'blob',
@@ -124,7 +122,7 @@ const NoteService = {
   // Add to Favorites
   async addToFavorites(noteId: string): Promise<void> {
     try {
-      const token = await this.getToken();
+      const token = await CommonService.getToken();
       await axiosConfig.post(`${apiUrl}/note/${noteId}/favorite`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
