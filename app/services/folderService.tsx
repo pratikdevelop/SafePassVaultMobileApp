@@ -1,9 +1,10 @@
 // FolderService.ts
 
-import axiosConfig from '@/axios-config';
-import axios, { AxiosResponse } from 'axios';
-import SessionStorage from 'react-native-session-storage';
-import CommonService from './CommonService';
+import axiosConfig from "@/axios-config";
+import axios, { AxiosResponse } from "axios";
+import SessionStorage from "react-native-session-storage";
+import CommonService from "./CommonService";
+import { useSelector } from "react-redux";
 
 // Define the Folder model
 export interface Folder {
@@ -22,14 +23,19 @@ const apiUrl = `/folders`; // Define API_URL in your environment
 class FolderService {
   private apiUrl = apiUrl;
 
-
   // Create a new folder
-  public async createFolder(folder: Folder): Promise<Folder | undefined> {
+  public async createFolder(
+    folder: Folder,
+    token: string
+  ): Promise<Folder | undefined> {
     try {
-      const token = await CommonService.getToken();
-      const response: AxiosResponse<Folder> = await axiosConfig.post(this.apiUrl, folder, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response: AxiosResponse<Folder> = await axiosConfig.post(
+        this.apiUrl,
+        folder,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -37,12 +43,14 @@ class FolderService {
   }
 
   // Get all folders for the logged-in user
-  public async getUserFolders(): Promise<Folder[] | undefined> {
+  public async getUserFolders(token: string): Promise<Folder[] | undefined> {
     try {
-      const token = await CommonService.getToken();
-      const response: AxiosResponse<Folder[]> = await axiosConfig.get(this.apiUrl, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response: AxiosResponse<Folder[]> = await axiosConfig.get(
+        this.apiUrl,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -50,12 +58,17 @@ class FolderService {
   }
 
   // Get folders by type
-  public async getFoldersByType(type?: string): Promise<Folder[] | undefined> {
+  public async getFoldersByType(
+    type?: string,
+    token?: string
+  ): Promise<Folder[] | undefined> {
     try {
-      const token = await CommonService.getToken();
-      const response: AxiosResponse<Folder[]> = await axiosConfig.get(`${this.apiUrl}/type/${type}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response: AxiosResponse<Folder[]> = await axiosConfig.get(
+        `${this.apiUrl}/type/${type}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -63,12 +76,17 @@ class FolderService {
   }
 
   // Get folder by ID
-  public async getFolderById(folderId: string): Promise<Folder | undefined> {
+  public async getFolderById(
+    folderId: string,
+    token: string
+  ): Promise<Folder | undefined> {
     try {
-      const token = await CommonService.getToken();
-      const response: AxiosResponse<Folder> = await axiosConfig.get(`${this.apiUrl}/${folderId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response: AxiosResponse<Folder> = await axiosConfig.get(
+        `${this.apiUrl}/${folderId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -76,12 +94,19 @@ class FolderService {
   }
 
   // Update a folder
-  public async updateFolder(folderId: string, folder: Folder): Promise<Folder | undefined> {
+  public async updateFolder(
+    folderId: string,
+    folder: Folder,
+    token: string
+  ): Promise<Folder | undefined> {
     try {
-      const token = await CommonService.getToken();
-      const response: AxiosResponse<Folder> = await axiosConfig.put(`${this.apiUrl}/${folderId}`, folder, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response: AxiosResponse<Folder> = await axiosConfig.put(
+        `${this.apiUrl}/${folderId}`,
+        folder,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -89,9 +114,8 @@ class FolderService {
   }
 
   // Delete a folder
-  public async deleteFolder(folderId: string): Promise<void> {
+  public async deleteFolder(folderId: string, token: string): Promise<void> {
     try {
-      const token = await CommonService.getToken();
       await axiosConfig.delete(`${this.apiUrl}/${folderId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });

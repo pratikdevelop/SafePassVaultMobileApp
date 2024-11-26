@@ -8,8 +8,10 @@ import Confirmation from "../components/Confirmation";
 import BottomMenu from "../components/BottomDrawer";
 import MenuDrawer from "react-native-side-drawer";
 import CommonService from "../services/CommonService";
+import { useSelector } from "react-redux";
 
 const PasswordScreen = ({ navigation }: any) => {
+  const token = useSelector((state: any) => state.auth.token);
   const [passwords, setPasswords] = useState<any[]>([]);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
@@ -22,9 +24,7 @@ const PasswordScreen = ({ navigation }: any) => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const res = await CommonService.searchTags();
-        console.log("res");
-
+        const res = await CommonService.searchTags(token);
         setTags(res);
       } catch (error) {
         console.error("Error fetching tags:", error);
@@ -38,7 +38,7 @@ const PasswordScreen = ({ navigation }: any) => {
 
   const getPasswords = async () => {
     try {
-      const data = await service.fetchPasswords(search);
+      const data = await service.fetchPasswords(search, token);
       setPasswords(data);
     } catch (error) {
       console.error("Error fetching passwords:", error);
@@ -67,16 +67,19 @@ const PasswordScreen = ({ navigation }: any) => {
     setShowModel(true);
   };
 
-  const handleConfirm = () => {
-    service.deletePassword(password._id).then(() => {
+  const handleConfirm = async () => {
+    try {
+      await service.deletePassword(password._id, token);
       getPasswords();
       setConfirmModel(false);
-    });
+    } catch (error: any) {
+      console.error("error in deleting the passaword", error.message);
+    }
   };
 
   const toggleFavourite = async (passwordId: string) => {
     try {
-      await service.addToFavorites(passwordId);
+      await service.addToFavorites(passwordId, token);
       getPasswords();
     } catch (error) {
       console.error("Error fetching passwords:", error);
@@ -154,6 +157,7 @@ const PasswordScreen = ({ navigation }: any) => {
             hideDialog={hideDialog}
             password={password}
             tags={tags}
+            token={token}
           />
         }
         drawerPercentage={100}
@@ -179,6 +183,7 @@ const PasswordScreen = ({ navigation }: any) => {
             toggleDrawer={toggleDrawer}
             password={password}
             drawerRef={drawerRef}
+            token={token}
           />
         }
         drawerPercentage={100}

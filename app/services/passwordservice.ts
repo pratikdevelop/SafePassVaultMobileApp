@@ -1,16 +1,13 @@
-import SessionStorage from "react-native-session-storage";
 import axiosConfig from "../../axios-config";
 import CryptoJS from "react-native-crypto-js";
 import randomstring from "randomstring";
-import { string } from "yup";
-import CommonService from "./CommonService";
 
 const apiUrl = "/passwords";
 
 const PasswordService = {
-  fetchPasswords: async (search: string) => {
+  // Removed token initialization here, will pass token as argument
+  async fetchPasswords(search: string, token: string) {
     try {
-      const token =CommonService.getToken();
       const { data } = await axiosConfig.get(`${apiUrl}?search=${search}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -39,9 +36,8 @@ const PasswordService = {
     }
   },
 
-  addPassword: async (password: any) => {
+  async addPassword(password: any, token: string) {
     try {
-      const token =CommonService.getToken();
       password.key = randomstring.generate({
         length: 32,
         charset: "alphanumeric",
@@ -65,9 +61,8 @@ const PasswordService = {
     }
   },
 
-  deletePassword: async (id: any) => {
+  async deletePassword(id: any, token: string) {
     try {
-      const token =CommonService.getToken();
       await axiosConfig.delete(`${apiUrl}/password/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -77,9 +72,8 @@ const PasswordService = {
     }
   },
 
-  addToFavorites: async (passwordId: any) => {
+  async addToFavorites(passwordId: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/password/${passwordId}/favorite`,
         {},
@@ -94,9 +88,8 @@ const PasswordService = {
     }
   },
 
-  updatePassword: async (_id: any, newPasswordObject: any) => {
+  async updatePassword(_id: any, newPasswordObject: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.put(
         `${apiUrl}/password/${_id}`,
         newPasswordObject,
@@ -115,9 +108,8 @@ const PasswordService = {
     }
   },
 
-  sharePassword: async (passwordId: any) => {
+  async sharePassword(passwordId: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/share/${passwordId}`,
         {},
@@ -132,9 +124,8 @@ const PasswordService = {
     }
   },
 
-  searchTags: async (name: any) => {
+  async searchTags(name: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.get(`/tags/search/${name}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -145,9 +136,8 @@ const PasswordService = {
     }
   },
 
-  addTag: async (payload: any) => {
+  async addTag(payload: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.post(`/tags/tag`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -158,9 +148,8 @@ const PasswordService = {
     }
   },
 
-  exportPasswordsAsCsv: async (ids: any) => {
+  async exportPasswordsAsCsv(ids: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.get(`${apiUrl}/export?ids=${ids}`, {
         responseType: "blob",
         headers: { Authorization: `Bearer ${token}` },
@@ -172,9 +161,8 @@ const PasswordService = {
     }
   },
 
-  addTagToPassword: async (passwordId: any, tagName: any) => {
+  async addTagToPassword(passwordId: any, tagName: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/add-tag`,
         { passwordId, tagName },
@@ -189,9 +177,8 @@ const PasswordService = {
     }
   },
 
-  postComment: async (passwordId: any, content: any) => {
+  async postComment(passwordId: any, content: any, token: string) {
     try {
-      const token =CommonService.getToken();
       const response = await axiosConfig.post(
         `${apiUrl}/${passwordId}/comments`,
         { content },

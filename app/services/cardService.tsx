@@ -1,21 +1,24 @@
-import axiosConfig from '@/axios-config';
-import axios from 'axios';
-import { Alert } from 'react-native';
-import SessionStorage from 'react-native-session-storage';
-import CommonService from './CommonService';
+import axiosConfig from "@/axios-config";
+import { Alert } from "react-native";
+import { useSelector } from "react-redux";
+
+// Define the types for the Card service
+interface Card {
+  id: string;
+  title: string;
+  content: string;
+}
+
+interface ExportCardsResponse {
+  data: Blob;
+}
 
 class CardService {
-  private apiUrl: string;
-
-  constructor() {
-    this.apiUrl = `/cards`; // Base URL for card-related endpoints
-  }
-
+  private apiUrl: string = "/cards";
 
   // Create a new card
-  async createCard(card: any) {
+  async createCard(card: Card, token: any) {
     try {
-      const token = await CommonService.getToken();
       const response = await axiosConfig.post(`${this.apiUrl}`, card, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -26,10 +29,9 @@ class CardService {
   }
 
   // Get all cards
-  async getCards() {
+  async getCards(token: any) {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.get(this.apiUrl, {
+      const response = await axiosConfig.get<any>(this.apiUrl, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -39,10 +41,9 @@ class CardService {
   }
 
   // Get a specific card by ID
-  async getCardById(id: string) {
+  async getCardById(id: string, token: any) {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.get(`${this.apiUrl}/${id}`, {
+      const response = await axiosConfig.get<Card>(`${this.apiUrl}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -52,12 +53,15 @@ class CardService {
   }
 
   // Update a card by ID
-  async updateCard(id: string, card: any) {
+  async updateCard(id: string, card: Partial<Card>, token: any) {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.patch(`${this.apiUrl}/${id}`, card, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosConfig.patch<Card>(
+        `${this.apiUrl}/${id}`,
+        card,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -65,9 +69,8 @@ class CardService {
   }
 
   // Delete a card by ID
-  async deleteCard(id: string) {
+  async deleteCard(id: string, token: any) {
     try {
-      const token = await CommonService.getToken();
       const response = await axiosConfig.delete(`${this.apiUrl}/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -78,12 +81,11 @@ class CardService {
   }
 
   // Export cards as CSV
-  async exportCardsAsCsv(ids: string[]) {
+  async exportCardsAsCsv(ids: string[], token: any): Promise<any> {
     try {
-      const token = await CommonService.getToken();
       const response = await axiosConfig.get(`${this.apiUrl}/export`, {
         params: { ids },
-        responseType: 'blob', // Ensures it gets a binary file
+        responseType: "blob", // Ensures it gets a binary file
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -93,12 +95,15 @@ class CardService {
   }
 
   // Add a card to favorites
-  async addToFavorites(cardId: string) {
+  async addToFavorites(cardId: string, token: any) {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.post(`${this.apiUrl}/card/${cardId}/favorite`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosConfig.post(
+        `${this.apiUrl}/card/${cardId}/favorite`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       this.handleError(error);
@@ -106,9 +111,9 @@ class CardService {
   }
 
   // Error handling
-  private handleError(error: unknown) {
-    console.error('An error occurred:', error);
-    Alert.alert('Error', 'Something went wrong; please try again later.');
+  private handleError(error: any) {
+    console.error("An error occurred:", error);
+    Alert.alert("Error", "Something went wrong; please try again later.");
   }
 }
 

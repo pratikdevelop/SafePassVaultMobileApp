@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, TextInput } from "react-native-paper";
+import { Button, Snackbar, TextInput } from "react-native-paper";
 import { loginUser } from "../store/actions/authAction"; // Adjust the import based on your structure
 import store from "../store/store";
 
@@ -21,11 +21,10 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
   const formValue = useForm({
     resolver: yupResolver(LoginSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      username: "testuser@yopmail.com",
+      password: "Access@#$1234",
     },
   });
-  
 
   const onSubmit = async (data: any) => {
     setIssubmitting(true);
@@ -40,27 +39,25 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           email: data.username,
         });
       } else if (res.success) {
+        setSnackbarMessage("Login Successful");
+        setSnackbarVisible(true);
         navigation.navigate("Home");
       } else {
-        setSnackbarMessage(res?.message);
+        setSnackbarMessage("Login failed, credentials is Invalid");
         setSnackbarVisible(true);
       }
-      setIssubmitting(false)
+      setIssubmitting(false);
     } catch (error) {
       console.error("Login error:", error);
       setSnackbarMessage("Login failed. Please try again.");
       setSnackbarVisible(true);
-      setIssubmitting(false)
+      setIssubmitting(false);
     }
-
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-        {snackbarVisible ? (
-          <Text style={styles.title}>{snackbarMessage}</Text>
-        ) : null}
         <Text style={styles.title}>Login with your account</Text>
         <Controller
           control={formValue.control}
@@ -69,17 +66,18 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
             <TextInput
               placeholder="Enter your username"
               onChangeText={onChange}
-              textColor={formValue.formState.errors.username ? "error" : "primary"}
+              textColor={
+                formValue.formState.errors.username ? "error" : "primary"
+              }
               onBlur={onBlur}
               value={value}
               inputMode="email"
               style={{
                 marginBottom: 20,
-                backgroundColor:"white",
+                backgroundColor: "white",
                 borderRadius: 0,
                 borderWidth: 0, // Remove border width
               }}
-  
             />
           )}
         />
@@ -95,14 +93,19 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
-              right={<TextInput.Icon icon={hidePassword ? 'eye-off': 'eye'} onPress={()=>setHidePassword(!hidePassword)} />}
-              textContentType={hidePassword ? 'password':  'none'}
+              right={
+                <TextInput.Icon
+                  icon={hidePassword ? "eye-off" : "eye"}
+                  onPress={() => setHidePassword(!hidePassword)}
+                />
+              }
+              textContentType={hidePassword ? "password" : "none"}
               style={{
                 marginBottom: 20,
-                borderWidth: 0, 
-                backgroundColor:"white"
+                borderWidth: 0,
+                backgroundColor: "white",
               }}
-              error={formValue.getFieldState('password').invalid}
+              error={formValue.getFieldState("password").invalid}
             />
           )}
         />
@@ -122,7 +125,10 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           >
             <Text style={styles.link}> Create Account</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={()=>navigation.navigate('forget-password')} style={styles.linkContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("forget-password")}
+            style={styles.linkContainer}
+          >
             <Text style={styles.link}>Forgot Password</Text>
           </TouchableOpacity>
         </View>
@@ -131,24 +137,39 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           mode="contained"
           buttonColor="blue"
           textColor="white"
-          aria-disabled = {!formValue.formState.isValid}
+          aria-disabled={!formValue.formState.isValid}
           onPress={formValue.handleSubmit(onSubmit)}
-          disabled={isSubmitting || !!Object.keys(formValue.formState.errors).length}
+          disabled={
+            isSubmitting || !!Object.keys(formValue.formState.errors).length
+          }
           style={{
-            width: '100%',
+            width: "100%",
             height: 50,
-            borderRadius:0,
+            borderRadius: 0,
           }}
         >
-            <Text style={{
-              fontSize:20,
-              fontFamily:"sans serif",
-              fontWeight:600
-            }}>
-              Login
-            </Text>
+          <Text
+            style={{
+              fontSize: 20,
+              fontFamily: "sans serif",
+              fontWeight: 600,
+            }}
+          >
+            Login
+          </Text>
         </Button>
       </View>
+      <Snackbar
+        visible={snackbarVisible}
+        duration={2000}
+        onDismiss={() => setSnackbarVisible(false)}
+        action={{
+          label: "Close",
+          onPress: () => setSnackbarVisible(false),
+        }}
+      >
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 };
@@ -170,7 +191,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: 30,
     textAlign: "center",
-    
   },
   linkContainer: {
     marginVertical: 12,

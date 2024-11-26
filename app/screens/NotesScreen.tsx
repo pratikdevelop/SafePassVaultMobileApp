@@ -7,8 +7,10 @@ import BottomMenu from "../components/BottomDrawer";
 import NoteView from "../components/NoteView";
 import MenuDrawer from "react-native-side-drawer";
 import Confirmation from "../components/Confirmation";
+import { useSelector } from "react-redux";
 
 const NotesScreen = () => {
+  const token = useSelector((state: any) => state.auth.token);
   const [notes, setNotes] = useState<any[]>([]);
   const [note, setNote] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -20,7 +22,6 @@ const NotesScreen = () => {
   const [drawerRef, setDrawerRef] = useState<any>();
   const [confirmModel, setConfirmModel] = useState(false);
 
-
   useEffect(() => {
     getNotes();
   }, [search]);
@@ -28,7 +29,7 @@ const NotesScreen = () => {
   const getNotes = async () => {
     setLoading(true);
     try {
-      const response = await noteService.getNotes(search);
+      const response = await noteService.getNotes(search, token);
       console.log("notes", response);
       setNotes(response.data);
     } catch (error) {
@@ -64,7 +65,7 @@ const NotesScreen = () => {
   const addTag = async () => {
     if (newTag !== "") {
       try {
-        const response = await noteService.addTag(note._id, newTag);
+        const response = await noteService.addTag(note._id, newTag, token);
         setNewTag("");
         note.tags.push(response.tag);
       } catch (error) {
@@ -76,7 +77,11 @@ const NotesScreen = () => {
   const addComment = async () => {
     if (newComment !== "") {
       try {
-        const response = await noteService.postComment(note._id, newComment);
+        const response = await noteService.postComment(
+          note._id,
+          newComment,
+          token
+        );
         setNewComment("");
         note.comments.push(response.comment);
       } catch (error) {
@@ -85,17 +90,13 @@ const NotesScreen = () => {
     }
   };
 
-  const removeTag = (_id: React.Key): void => {
-    console.log("Tag removed:", _id);
-    // Implementation to remove the tag
-  };
   const handleAddNote = async (data: any) => {
     setLoading(true);
     try {
       const response =
         note && note._id
-          ? await noteService.updateNote(note._id, data)
-          : await noteService.createNote(data);
+          ? await noteService.updateNote(note._id, data, token)
+          : await noteService.createNote(data, token);
       console.log("response", response);
       setSnackbarMessage("Note added successfully!");
       setSnackbarVisible(true);
@@ -111,7 +112,7 @@ const NotesScreen = () => {
   };
 
   const handleConfirm = () => {
-    noteService.deleteNote(note._id).then((response: any) => {
+    noteService.deleteNote(note._id, token).then((response: any) => {
       getNotes();
       setConfirmModel(false);
     });
@@ -119,8 +120,7 @@ const NotesScreen = () => {
 
   const toggleFavourite = async (_id: any) => {
     try {
-      const response = await noteService.addToFavorites(_id);
-      console.log("response", response);
+      await noteService.addToFavorites(_id, token);
       setSnackbarMessage("Note added to favorites");
       setSnackbarVisible(true);
       getNotes();
@@ -193,8 +193,12 @@ const NotesScreen = () => {
             drawerContent={NoteView({
               toggleDrawer,
               note,
-              addTag, addComment,
-              newComment, newTag, setNewTag, setNewComment
+              addTag,
+              addComment,
+              newComment,
+              newTag,
+              setNewTag,
+              setNewComment,
             })}
             drawerPercentage={100}
             animationTime={250}
@@ -268,4 +272,3 @@ const styles = StyleSheet.create({
 });
 
 export default NotesScreen;
-

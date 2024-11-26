@@ -35,9 +35,13 @@ const IndexTabs = () => {
         name="Home"
         component={HomeScreen}
       />
-      <Tab.Screen name="Profile" options={{
-        headerShown:false
-      }} component={ProfileSettingsScreen} />
+      <Tab.Screen
+        name="Profile"
+        options={{
+          headerShown: false,
+        }}
+        component={ProfileSettingsScreen}
+      />
     </Tab.Navigator>
   );
 };
@@ -67,13 +71,11 @@ const Index = () => {
               name="Login"
               component={LoginScreen}
             />
-            <Stack.Screen 
-            options={{ headerShown: false }}
-            name="forget-password"
-            component={PasswordResetScreen}
-            >
-
-            </Stack.Screen>
+            <Stack.Screen
+              options={{ headerShown: false }}
+              name="forget-password"
+              component={PasswordResetScreen}
+            ></Stack.Screen>
             <Stack.Screen
               options={{ headerShown: false }}
               name="Signup"

@@ -1,39 +1,48 @@
 import React, { useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+  Button,
+  IconButton,
+  TextInput,
+  Snackbar,
+  DataTable,
+} from "react-native-paper";
 import CardService from "../services/cardService";
-import { useIsFocused } from "@react-navigation/native";
-import { Button, Icon, IconButton, Modal, Searchbar } from "react-native-paper";
 import CardForm from "../components/cardForm";
+// import CardView from "../components/CardView"; // Assumes you have a CardView component
 import MenuDrawer from "react-native-side-drawer";
+import { useSelector } from "react-redux";
 
 const CardComponent = ({ navigation }: any) => {
+  const token = useSelector((state: any) => state.auth.token);
   const [cards, setCards] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedCards, setSelectedCards] = useState<any>([]);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
+  const [drawerCard, setDrawerCard] = useState<any>(null);
+  const [snackbarVisible, setSnackbarVisible] = useState<boolean>(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const isFocused = useIsFocused(); // React Navigation hook for reloading on focus
 
   useEffect(() => {
-    if (isFocused || isSidebarOpen === false) {
-      fetchCards();
-      setSidebarOpen(false);
-      setModalVisible(false);
-    }
-  }, [isFocused, isSidebarOpen]);
+    fetchCards();
+  }, [searchTerm]);
 
   const fetchCards = async () => {
+    setLoading(true);
     try {
-      const response = await CardService.getCards();
-      setCards(response);
+      const response = await CardService.getCards(token);
+      console.log("ccc", response.cards);
+
+      setCards(response.cards); // Assuming response is an array of cards
     } catch (error) {
       console.error("Error fetching cards:", error);
+      setSnackbarMessage("Something went wrong, please try again later");
+      setSnackbarVisible(true);
+      setCards([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,159 +54,109 @@ const CardComponent = ({ navigation }: any) => {
     );
   };
 
-  const deleteCard = async (cardId: any) => {
-    const ids = cardId ? [cardId] : selectedCards;
-    try {
-      await CardService.deleteCard(ids.join(","));
-      fetchCards(); // Refresh list after deletion
-    } catch (error) {
-      console.error("Error deleting card:", error);
-    }
+  const openCardFormDialog = () => {
+    setSidebarOpen(true); // Open sidebar to add a new card or edit existing
   };
 
-  const openCardFormDialog = (card: null) => {
-    navigation.navigate("CardForm", { card });
+  const openCardDetails = (card: any) => {
+    setDrawerCard(card);
+    setDrawerVisible(true);
   };
 
-  const updateFavorites = async (cardId: any) => {
-    const ids = cardId ? [cardId] : selectedCards;
-    try {
-      await CardService.addToFavorites(ids.join(","));
-      fetchCards();
-    } catch (error) {
-      console.error("Error updating favorites:", error);
-    }
+  const handleCloseDrawer = () => {
+    setDrawerVisible(false);
   };
 
-  const exportCardsAsCsv = async () => {
-    const ids = selectedCards.join(",");
-    try {
-      const csvBlob = await CardService.exportCardsAsCsv(ids);
-      // handle CSV export for React Native
-    } catch (error) {
-      console.error("Error exporting cards:", error);
-    }
+  const handleSnackbarClose = () => {
+    setSnackbarVisible(false);
   };
 
   return (
-    <View style={{ flex: 1, padding: 16, width:"100%", backgroundColor:"white" }}>
-      {/* Search and Actions */}
-      <View style={{
-        display: 'flex',
-        flexDirection: "row",
-        alignContent:'center',
-      }}>
-     <Searchbar
-          style={{
-            height: 52,
-            width:"100%",
-            borderRadius: 0,
-            backgroundColor: "white",
-            borderWidth: 1,
-            display:"flex",
-            borderColor: "gray",
-          }}
+    <View style={styles.container}>
+      <View>
+        <TextInput
+          mode="outlined"
           placeholder="Search"
           onChangeText={setSearchTerm}
           value={searchTerm}
+          style={styles.searchInput}
         />
-        {/* <Button
-          mode="contained"
-          labelStyle={{
-            fontSize: 24,
-            color: "black",
-            fontWeight: "bold",
-            textAlign: "center",
-            padding:"auto"
-          }}
-          style={{
-            marginLeft: 6,
-            width: "15%",
-            height: 52,
-            display:"flex",
-            alignItems: "center",
-            padding: 12,
-            borderRadius:0,
-            alignContent: "center"
-          }}
-          buttonColor="slate"
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <>
+            <ScrollView>
+              <DataTable>
+                <DataTable.Header>
+                  <DataTable.Title>Holder name</DataTable.Title>
+                  <DataTable.Title>Card Number</DataTable.Title>
+                  <DataTable.Title>Expiration</DataTable.Title>
+                  <DataTable.Title>Actions</DataTable.Title>
+                </DataTable.Header>
 
-          icon={'menu'} children={undefined}        /> */}
-      </View>
-      {/* Card List */}
-      <FlatList
-        data={cards}
-        style={{
-          flex: 1,
-          padding: 16,
-          marginTop: 6,
-        }}
-        keyExtractor={(item: any) => item._id.toString()}
-        renderItem={({ item }: any) => (
-          <TouchableOpacity
-            style={{
-              flexDirection: "column",
-              padding: 16,
-            }}
-            onPress={() => toggleSelectCard(item._id)}
-          >
-            <Text
-              dataDetectorType="all"
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                color: selectedCards.includes(item._id) ? "#000" : "#333",
-                textTransform: "capitalize",
-                marginBottom: 5,
-              }}
-            >
-              {item.cardHolderName}
-            </Text>
-            <Text>
-              {item.cardNumber}{" "}
-              {item.expirationDate && `Expires: ${item.expirationDate}`}
-            </Text>
-          </TouchableOpacity>
+                {cards
+                  ?.filter((card: any) =>
+                    card.cardHolderName.includes(searchTerm)
+                  )
+                  .map((item: any, index) => (
+                    <DataTable.Row key={index + 1}>
+                      <DataTable.Cell>{item.cardHolderName}</DataTable.Cell>
+                      <DataTable.Cell>{item.cardNumber}</DataTable.Cell>
+                      <DataTable.Cell>{item.expiryDate}</DataTable.Cell>
+                      <DataTable.Cell>
+                        <IconButton
+                          icon="dots-vertical"
+                          size={24}
+                          onPress={() => openCardDetails(item)} // View card details
+                        />
+                        {/* <IconButton
+                        icon="star"
+                        size={24}
+                        onPress={() => toggleSelectCard(item._id)} // Add to favorites
+                      /> */}
+                      </DataTable.Cell>
+                    </DataTable.Row>
+                  ))}
+              </DataTable>
+            </ScrollView>
+
+            <MenuDrawer
+              open={isSidebarOpen}
+              position={"right"}
+              drawerContent={<CardForm />}
+              drawerPercentage={70}
+              animationTime={250}
+              overlay={true}
+              opacity={0.4}
+            />
+
+            <MenuDrawer
+              open={drawerVisible}
+              position={"right"}
+              drawerContent={
+                <></>
+                // <CardView card={drawerCard} closeDrawer={handleCloseDrawer} />
+              }
+              drawerPercentage={70}
+              animationTime={250}
+              overlay={true}
+              opacity={0.4}
+            />
+          </>
         )}
-      />
+      </View>
 
-      {/* Card Details Modal */}
-      <Modal
-        visible={modalVisible}
-        testID="model"
-        onDismiss={() => setModalVisible(false)}
+      <Snackbar
+        visible={snackbarVisible}
+        duration={2000}
+        onDismiss={handleSnackbarClose}
+        action={{
+          label: "Close",
+          onPress: handleSnackbarClose,
+        }}
       >
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <View
-            style={{
-              width: "80%",
-              padding: 20,
-              backgroundColor: "white",
-              borderRadius: 10,
-            }}
-          >
-            <Text>Card Details</Text>
-            {/* Display selected card details here */}
-            <Button children="Close" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
-
-      <MenuDrawer
-        open={isSidebarOpen}
-        position={"left"}
-        drawerContent={CardForm({
-          isSidebarOpen,
-          setSidebarOpen,
-          selectedCards,
-        })}
-        drawerPercentage={100}
-        animationTime={250}
-        overlay={true}
-        opacity={0.4}
-      />
+        {snackbarMessage}
+      </Snackbar>
 
       <IconButton
         icon="plus"
@@ -205,14 +164,22 @@ const CardComponent = ({ navigation }: any) => {
         containerColor="blue"
         iconColor="white"
         style={styles.newPasswordButton}
-        onPress={() => {
-          setSidebarOpen(true);
-        }}
+        onPress={openCardFormDialog} // Open card form dialog
       />
     </View>
   );
 };
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "white",
+    position: "relative",
+  },
+  searchInput: {
+    marginBottom: 16,
+  },
   newPasswordButton: {
     borderRadius: 20,
     position: "absolute",
@@ -221,9 +188,6 @@ const styles = StyleSheet.create({
     color: "#ff55d3",
     alignItems: "center",
   },
-  newPasswordButtonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
 });
+
 export default CardComponent;

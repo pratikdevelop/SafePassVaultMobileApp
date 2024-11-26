@@ -1,29 +1,20 @@
 import axiosConfig from "@/axios-config";
 import { AxiosError } from "axios";
-import SessionStorage from 'react-native-session-storage';
+import SessionStorage from "react-native-session-storage";
 import CommonService from "./CommonService";
-
-export interface Note {
-  id?: string;
-  title?: string;
-  content?: string;
-  // Define other note properties as needed
-}
+import { useSelector } from "react-redux";
 
 export interface SharePasswordResponse {
   shareLink: string;
 }
 
-const apiUrl = '/notes';
-
 const NoteService = {
-  // Helper to retrieve token
-  
+  // Removed token initialization here, will pass token as argument
+
   // Create a new note card
-  async createNote(note: Note): Promise<Note> {
+  async createNote(note: any, token: string): Promise<any> {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.post<Note>(`${apiUrl}/note`, note, {
+      const response = await axiosConfig.post<any>("/notes/note", note, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -34,10 +25,9 @@ const NoteService = {
   },
 
   // Get all note cards
-  async getNotes(searchTerm?: string): Promise<Note[]> {
+  async getNotes(searchTerm?: string, token?: string): Promise<any> {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.get<Note[]>(`${apiUrl}`, {
+      const response = await axiosConfig.get<any[]>("/notes", {
         params: { search: searchTerm },
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -49,10 +39,9 @@ const NoteService = {
   },
 
   // Get a note card by ID
-  async getNoteById(id: string): Promise<Note> {
+  async getNoteById(id: string, token: string): Promise<any> {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.get<Note>(`${apiUrl}/${id}`, {
+      const response = await axiosConfig.get<any>(`/notes/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -63,10 +52,13 @@ const NoteService = {
   },
 
   // Update a note card by ID
-  async updateNote(id: string, note: Partial<Note>): Promise<Note> {
+  async updateNote(
+    id: string,
+    note: Partial<any>,
+    token: string
+  ): Promise<any> {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.patch<Note>(`${apiUrl}/${id}`, note, {
+      const response = await axiosConfig.patch<any>(`/notes/${id}`, note, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -77,10 +69,9 @@ const NoteService = {
   },
 
   // Delete a note card by ID
-  async deleteNote(id: string): Promise<void> {
+  async deleteNote(id: string, token: string): Promise<void> {
     try {
-      const token = await CommonService.getToken();
-      await axiosConfig.delete(`${apiUrl}/${id}`, {
+      await axiosConfig.delete(`/notes/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error: any) {
@@ -90,12 +81,18 @@ const NoteService = {
   },
 
   // Share Password
-  async sharePassword(passwordId: string): Promise<SharePasswordResponse> {
+  async sharePassword(
+    passwordId: string,
+    token: string
+  ): Promise<SharePasswordResponse> {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.post<SharePasswordResponse>(`${apiUrl}/share/${passwordId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosConfig.post<SharePasswordResponse>(
+        `/notes/share/${passwordId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error: any) {
       this.handleError(error);
@@ -104,12 +101,11 @@ const NoteService = {
   },
 
   // Export Notes as CSV
-  async exportNotesAsCsv(ids: string): Promise<Blob> {
+  async exportNotesAsCsv(ids: string, token: string): Promise<Blob> {
     try {
-      const token = await CommonService.getToken();
-      const response = await axiosConfig.get(`${apiUrl}/export`, {
+      const response = await axiosConfig.get(`/notes/export`, {
         params: { ids },
-        responseType: 'blob',
+        responseType: "blob",
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
@@ -120,12 +116,15 @@ const NoteService = {
   },
 
   // Add to Favorites
-  async addToFavorites(noteId: string): Promise<void> {
+  async addToFavorites(noteId: string, token: string): Promise<void> {
     try {
-      const token = await CommonService.getToken();
-      await axiosConfig.post(`${apiUrl}/note/${noteId}/favorite`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosConfig.post(
+        `/notes/note/${noteId}/favorite`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
     } catch (error: any) {
       this.handleError(error);
       throw error;
@@ -134,35 +133,41 @@ const NoteService = {
 
   // Error handling
   handleError(error: AxiosError): void {
-    console.error('An error occurred:', error);
+    console.error("An error occurred:", error);
     // Additional error handling logic can be added here if necessary
   },
 
-  async postComment(_id: any, newComment: string) {
+  async postComment(_id: any, newComment: string, token: string) {
     try {
-      const token = await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
-      const response = await axiosConfig.post(`${apiUrl}/${_id}/comments`, { content:newComment }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosConfig.post(
+        `/notes/${_id}/comments`,
+        { content: newComment },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
-      console.error('Error posting comment:', error);
+      console.error("Error posting comment:", error);
       throw error;
     }
-
   },
-  async addTag(_id: any, newTag: string): Promise<any> {
+
+  async addTag(_id: any, newTag: string, token: string): Promise<any> {
     try {
-      const token = await SessionStorage.getItem('token') || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzI3NDMyYjVkYzA4NjI1MjIwY2M3MjIiLCJpYXQiOjE3MzA2NDc0NzZ9.68149dyGYV3mb51tPwc75CZwjZhaCEjGbH_Q7c3OuQk';
-      const response = await axiosConfig.post(`${apiUrl}/add-tag`, { noteId:_id, tagName: newTag }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosConfig.post(
+        `/notes/add-tag`,
+        { noteId: _id, tagName: newTag },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
-      console.error('Error adding tag to password:', error);
+      console.error("Error adding tag to note:", error);
       throw error;
     }
-  }
-}
+  },
+};
 
 export default NoteService;

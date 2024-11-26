@@ -1,13 +1,8 @@
-import SessionStorage from "react-native-session-storage";
 import axiosConfig from "../../axios-config";
 
 const CommonService = {
-  async getToken() {
-    return  await SessionStorage.getItem("token");
-  },
-  searchTags: async () => {
+  async searchTags(token: string) {
     try {
-      const token = await CommonService.getToken();
       const response = await axiosConfig.get(`/tags`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -19,10 +14,8 @@ const CommonService = {
       throw error;
     }
   },
-
-  addTag: async (payload: any) => {
+  async addTag(payload: any, token: string) {
     try {
-      const token = await CommonService.getToken();
       const response = await axiosConfig.post(`/tags/tag`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -20,12 +20,14 @@ interface PasswordFormProps {
     folder: any;
   };
   tags: any[];
+  token: string;
 }
 const PasswordForm = ({
   showModel,
   hideDialog,
   password,
   tags,
+  token,
 }: PasswordFormProps) => {
   const {
     control,
@@ -61,9 +63,9 @@ const PasswordForm = ({
   const onSubmit = async (data: any) => {
     try {
       if (password && password._id) {
-        await PasswordService.updatePassword(password._id, data);
+        await PasswordService.updatePassword(password._id, data, token);
       } else {
-        await PasswordService.addPassword(data);
+        await PasswordService.addPassword(data, token);
       }
       hideDialog(true);
     } catch (error) {
@@ -248,7 +250,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "column",
-    justifyContent:"flex-start",
+    justifyContent: "flex-start",
     marginTop: 20,
   },
   submitButton: {

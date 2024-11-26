@@ -1,138 +1,163 @@
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   Image,
   ScrollView,
-  Alert
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Appbar, Button } from "react-native-paper";
 import EditProfileModal from "../components/editprofilemodal";
+import authService from "../services/authService";
+import { useSelector } from "react-redux";
 
 const PersonalDetailsScreen = () => {
-  let show = false;
-  const [editModalVisible, setEditModalVisible] = useState<any>(false);
-  const [user, setUser] = useState({
-    name: "John Doe",
-    role: "admin",
-    email: "john.doe@example.com",
-    phone: "1234567890",
-    createdAt: "2023-04-01T12:34:56",
-    billingAddress: "123 Main Street",
-    city: "San Francisco",
-    state: "California",
-    postalCode: "94101",
-    country: "USA",
-    organization: [{ name: "Tech Corp" }],
-    userImage: null,
-    mfaEnabled: true,
-  });
-
+  const token = useSelector((state: any) => state.auth.token);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [user, setUser] = useState<any>({});
   const [plan, setPlan] = useState({ plan: "Free" });
+  const [loading, setLoading] = useState<boolean>(false);
 
-  // Function to handle file selection using ImagePicker
+  // Fetch user profile data
+  useEffect(() => {
+    fetchProfile();
+  }, [token]); // Re-run fetch if token changes
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const profile = await authService.getProfile(token);
+      const userInfo = profile.user;
+      setUser(userInfo); // Update the state directly
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle file selection (no implementation currently)
   const onFileSelected = async () => {
     try {
-      // const result: any = await ImagePicker.launchImageLibraryAsync({
-      //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      //   allowsEditing: true,
-      //   quality: 1,
-      // });
-      // console.log("ff", result);
-
-      // if (!result.canceled) {
-      //   setUser({ ...user, userImage: result.assets });
-      // }
     } catch (error) {
       console.error("File selection error:", error);
       Alert.alert("Error", "Could not select image.");
     }
   };
 
-  // Function to handle editing profile
+  // Open edit profile modal
   const editProfile = () => {
-    show = true
-    console.log('fff', show);
-    
+    setEditModalVisible(true);
   };
-
-
-  const handleSaveProfile = () => {
-    Alert.alert("Profile Updated", "Your changes have been saved.");
-  };
-
-  const handleCancelEdit = () => {};
 
   return (
     <ScrollView style={styles.container}>
-      <Appbar.Header
-        style={{
-          backgroundColor: "#fff",
-          borderColor: "lightgray",
-          shadowColor: "lightgray",
-          borderBottomColor: "gray",
-          borderBottomWidth: 1,
-          elevation: 0,
-        }}
-        
-      >
-        <Appbar.Content  title="Personal Information" />
-        <Button mode="contained" onPress={editProfile}>
-          <Text>Edit Profile</Text>
-        </Button>
-      </Appbar.Header>
-      {/* Profile Info */}
-      <View style={styles.profileContainer}>
-        {/* Left Section */}
-        <View style={styles.imageSection}>
-          <Image
-            source={{
-              uri: user.userImage || "https://placehold.co/150",
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <>
+          <Appbar.Header
+            style={{
+              backgroundColor: "#fff",
+              borderColor: "lightgray",
+              shadowColor: "lightgray",
+              borderBottomColor: "gray",
+              borderBottomWidth: 1,
+              elevation: 0,
             }}
-            style={styles.profileImage}
-          />
-          <Button mode="contained" onPress={onFileSelected}>
-            <Text style={styles.uploadText}>Upload Photo</Text>
-          </Button>
-        </View>
+          >
+            <Appbar.Content title="Personal Information" />
+            <Button mode="contained" onPress={editProfile}>
+              <Text>Edit Profile</Text>
+            </Button>
+          </Appbar.Header>
 
-        {/* Right Section */}
-        <View style={styles.infoSection}>
-          <Text style={styles.name}>Welcome {user.name}</Text>
-          <View style={styles.infoGrid}>
-            <DetailItem label="Role" value={user.role} />
-            <DetailItem label="Email" value={user.email} />
-            <DetailItem label="Phone" value={`+${user.phone}`} />
-            <DetailItem
-              label="Created at"
-              value={new Date(user.createdAt).toLocaleDateString()}
-            />
-            <DetailItem
-              label="Address"
-              value={`${user.billingAddress}, ${user.city}`}
-            />
-            <DetailItem label="City" value={user.city} />
-            <DetailItem label="State" value={user.state} />
-            <DetailItem label="Postal Code" value={user.postalCode} />
-            <DetailItem label="Country" value={user.country} />
-            <DetailItem
-              label="Organization"
-              value={user.organization[0]?.name}
-            />
-            <DetailItem label="Plan" value={plan.plan} />
-            <DetailItem
-              label="MFA Status"
-              value={user.mfaEnabled ? "Enabled" : "Disabled"}
+          {/* Profile Info */}
+          <View style={styles.profileContainer}>
+            {/* Left Section */}
+            <View style={styles.imageSection}>
+              <Image
+                source={{
+                  uri: user?.userImage || "https://placehold.co/150", // Default if no image
+                }}
+                style={styles.profileImage}
+              />
+              <Button mode="contained" onPress={onFileSelected}>
+                <Text style={styles.uploadText}>Upload Photo</Text>
+              </Button>
+            </View>
+
+            {/* Right Section */}
+            <View style={styles.infoSection}>
+              <Text style={styles.name}>
+                Welcome {user?.name || "User"}
+              </Text>
+              <View style={styles.infoGrid}>
+                <DetailItem label="Role" value={user?.role || "N/A"} />
+                <DetailItem
+                  label="Email"
+                  value={user?.email || "N/A"}
+                />
+                <DetailItem
+                  label="Phone"
+                  value={`+${user?.phone || "N/A"}`}
+                />
+                <DetailItem
+                  label="Created at"
+                  value={
+                    user?.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : "N/A"
+                  }
+                />
+                <DetailItem
+                  label="Address"
+                  value={
+                    user?.billingAddress
+                      ? `${user.billingAddress}, ${user?.city || ""}`
+                      : "N/A"
+                  }
+                />
+                <DetailItem label="City" value={user?.city || "N/A"} />
+                <DetailItem
+                  label="State"
+                  value={user?.state || "N/A"}
+                />
+                <DetailItem
+                  label="Postal Code"
+                  value={user?.postalCode || "N/A"}
+                />
+                <DetailItem
+                  label="Country"
+                  value={user?.country || "N/A"}
+                />
+                <DetailItem
+                  label="Organization"
+                  value={
+                    user?.organization?.length > 0
+                      ? user.organization[0]?.name
+                      : "N/A"
+                  }
+                />
+                <DetailItem label="Plan" value={plan?.plan || "N/A"} />
+                <DetailItem
+                  label="MFA Status"
+                  value={user?.mfaEnabled ? "Enabled" : "Disabled"}
+                />
+              </View>
+            </View>
+
+            {/* Edit Profile Modal */}
+            <EditProfileModal
+              visible={editModalVisible}
+              onClose={() => setEditModalVisible(false)}
             />
           </View>
-        </View>
-          <EditProfileModal
-            visible={show}
-            onClose={() => setEditModalVisible(false)}
-          />
-      </View>
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -185,7 +210,7 @@ const styles = StyleSheet.create({
   detailValue: {
     marginLeft: 4,
     fontFamily: "Fantasy",
-    color:"gray"
+    color: "gray",
   },
   imageSection: {
     flex: 1,
@@ -194,15 +219,10 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 200,
     height: 200,
-    borderRadius: "50%",
+    borderRadius: 100, // Circular Image
     borderWidth: 4,
     borderColor: "#38BDF8",
     marginBottom: 16,
-  },
-  uploadButton: {
-    backgroundColor: "",
-    padding: 8,
-    borderRadius: 5,
   },
   uploadText: {
     fontSize: 14,
