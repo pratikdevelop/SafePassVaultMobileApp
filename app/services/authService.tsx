@@ -1,9 +1,7 @@
 import axiosConfig from "@/axios-config";
-import { ToKey } from "react-hook-form/dist/types/path/common";
-import { useSelector } from "react-redux";
 
 class AuthService {
-  userProfile: any;
+  userProfile: any = null;
   async signup(signupForm: any) {
     try {
       const response = await axiosConfig.post(`/auth/register`, signupForm);
@@ -72,13 +70,14 @@ class AuthService {
 
   async getProfile(token: any) {
     try {
-      const response = await axiosConfig.get(`/auth/profile`, {
+      const response = await axiosConfig.get<any>(`/auth/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      response.data.user["userImage"] = null;
       this.userProfile = response.data; // Update user profile
-      return response.data;
+      return response.data as any;
     } catch (error) {
       console.error("Error fetching profile:", error);
       throw error;
@@ -204,6 +203,19 @@ class AuthService {
           Authorization: `Bearer ${token}`,
         },
       });
+      return response.data;
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      throw error;
+    }
+  }
+
+  async generatePrivateKey(formData: any) {
+    try {
+      const response = await axiosConfig.post(
+        `/auth/generate-private-key`,
+        formData
+      );
       return response.data;
     } catch (error) {
       console.error("Error updating profile:", error);

@@ -1,5 +1,4 @@
 import React from "react";
-import { StyleSheet } from "react-native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { IconButton } from "react-native-paper";
 import store from "../store/store";
@@ -54,6 +53,7 @@ const ProfileSettingsScreen = ({ navigation }: { navigation: any }) => {
           elevation: 0,
         },
       }}
+      initialRouteName="PersonalDetailsScreen"
     >
       {Object.entries(screens).map(([name, Component]: any) => (
         <Drawer.Screen

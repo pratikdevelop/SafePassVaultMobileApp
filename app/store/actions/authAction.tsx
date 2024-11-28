@@ -8,6 +8,8 @@ import SessionStorage from "react-native-session-storage";
 import AuthService from "@/app/services/authService";
 import { ThunkAction } from "redux-thunk";
 import { Action } from "redux";
+import authService from "@/app/services/authService";
+import { tokens } from "react-native-paper/lib/typescript/styles/themes/v3/tokens";
 
 // Action Creators
 export const setToken = (token: any) => ({
@@ -31,6 +33,7 @@ export const loginUser = (
         return { mfaRequired: true, mfaMethod: response.mfaMethod };
       } else {
         await SessionStorage.setItem("token", response.token);
+        await authService.getProfile(response.token);
         dispatch(setToken(response.token));
         return { success: true };
       }
