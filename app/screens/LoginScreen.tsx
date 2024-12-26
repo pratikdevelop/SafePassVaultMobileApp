@@ -37,6 +37,7 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
         navigation.navigate("MFAVerification", {
           mfaMethod: res.mfaMethod,
           email: data.username,
+          
         });
       } else if (res.success) {
         setSnackbarMessage("Login Successful");
